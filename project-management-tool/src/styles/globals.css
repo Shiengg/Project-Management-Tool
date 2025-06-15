@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.input-box {
+  @apply inset-shadow-sm p-2 rounded-md text-white;
+  background-color: rgba(39, 39, 39, 0.5);
+}
+
+.button {
+  @apply cursor-pointer text-black p-2 rounded-md bg-white flex items-center justify-center;
+}
+
+.button:active {
+  @apply bg-white/80;
+}
+
+.nav {
+  @apply text-white backdrop-blur-xs p-2 flex flex-row gap-2;
+  background-color: rgba(39, 39, 39, 0.7);
+}
+
+.panel-1 {
+  @apply text-white rounded backdrop-blur-xs;
+  background-color: rgba(39, 39, 39, 0.7);
+}
+
+#ThemeManager {
+  height: 100vh;
+  width: 100vw;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.background-1 {
+  background: white;
+}
+
+.background-2 {
+  background: #272727;
+}
+
+.background-3 {
+  background: #171717;
+}
+.background-4 {
+  background: #0a0a0a;
+}
+.background-5 {
+  background: #ededed;
+}
+.background-6 {
+  background: #f5f5f5;
+}
+.background-7 {
+  background: #f0f0f0;
+}
+.background-8 {
+  background: #e0e0e0;
+}
+.background-9 {
+  background: #d0d0d0;
+}
+
+.background-img-1 {
+  background-image: url("/background/background1.jpg");
+}
+.background-img-2 {
+  background-image: url("/background/background2.jpg");
+}
+.background-img-3 {
+  background-image: url("/background/background3.jpg");
+}
+.background-img-4 {
+  background-image: url("/background/background4.jpg");
+}
