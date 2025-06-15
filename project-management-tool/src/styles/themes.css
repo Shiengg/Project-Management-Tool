@@ -1,0 +1,65 @@
+#ThemeManager {
+  height: 100vh;
+  width: 100vw;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.background-1 {
+  background: white;
+}
+
+.background-2 {
+  background: #111111;
+}
+
+.background-3 {
+  background: #FF4A4A;
+}
+.background-4 {
+  background: #FF914D;
+}
+.background-5 {
+  background: #FEFE70;
+}
+.background-6 {
+  background: #B5FF6C;
+}
+.background-7 {
+  background: #36C6EE;
+}
+.background-8 {
+  background: #986CFF;
+}
+.background-9 {
+  background: #EE36CC;
+}
+
+.background-grad-1 {
+    background: linear-gradient( to bottom right,#BA6CFF,#E049EE,#F52AF2)
+}
+.background-grad-2 {
+    background: linear-gradient( to bottom right,#6CFFA9,#49EEC7,#2AF5EB)
+}
+.background-grad-3 {
+    background: linear-gradient( to bottom right,#FF6C6C,#EEC749,#FFFF33)
+}
+.background-grad-4 {
+    background: linear-gradient(to bottom right,#876CFF,#EE7B49,#F5902A)
+}
+
+
+.background-img-1 {
+  background-image: url("/background/background1.jpg");
+}
+.background-img-2 {
+  background-image: url("/background/background2.jpg");
+}
+.background-img-3 {
+  background-image: url("/background/background3.jpg");
+}
+.background-img-4 {
+  background-image: url("/background/background4.jpg");
+}
