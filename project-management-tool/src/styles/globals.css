@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(39, 39, 39, 0.5);
+  border-radius: 10px;
+}
+
+/* Scrollbar Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(39, 39, 39, 1);
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -24,9 +44,14 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
 
 .input-box {
-  @apply inset-shadow-sm p-2 rounded-md text-white;
+  @apply inset-shadow-sm p-2 rounded-md text-white   focus:outline-2 focus:outline-slate-400;
   background-color: rgba(39, 39, 39, 0.5);
 }
 
@@ -38,8 +63,38 @@ body {
   @apply bg-white/80;
 }
 
+.button-3 {
+  @apply cursor-pointer text-white p-1 px-2 rounded bg-slate-500 flex items-center justify-center;
+}
+
+.button-3:active {
+  @apply bg-slate-300;
+}
+
+.button-2 {
+  @apply cursor-pointer text-sm text-slate-300 p-2 rounded-md bg-black flex items-center justify-center;
+}
+
+.button-2:hover {
+  @apply bg-slate-600;
+}
+.button-2:active {
+  @apply bg-slate-500;
+}
+
+.button-4 {
+  @apply cursor-pointer text-sm text-slate-300 p-2 rounded-md flex items-center justify-center;
+}
+
+.button-4:hover {
+  @apply bg-slate-500;
+}
+.button-4:active {
+  @apply bg-slate-400;
+}
+
 .nav {
-  @apply text-white backdrop-blur-xs p-2 flex flex-row gap-2;
+  @apply text-white backdrop-blur-xs p-2 flex flex-row gap-2 sticky top-0 left-0 z-50;
   background-color: rgba(39, 39, 39, 0.7);
 }
 
@@ -48,54 +103,28 @@ body {
   background-color: rgba(39, 39, 39, 0.7);
 }
 
-#ThemeManager {
-  height: 100vh;
-  width: 100vw;
-  background-repeat: no-repeat;
-  background-position: bottom;
-  background-attachment: fixed;
-  background-size: cover;
+.task-list-container {
+  @apply rounded-md bg-black p-2 size-fit flex flex-col gap-3 text-slate-300 snap-center max-h-[80vh];
 }
 
-.background-1 {
-  background: white;
+.task-list {
+  @apply flex flex-col gap-2 overflow-y-auto p-1;
 }
 
-.background-2 {
-  background: #272727;
+.task-card {
+  @apply rounded-md overflow-hidden cursor-pointer hover:outline-2 outline-white min-w-[250px] min-h-fit;
+  background-color: #272727;
 }
 
-.background-3 {
-  background: #171717;
-}
-.background-4 {
-  background: #0a0a0a;
-}
-.background-5 {
-  background: #ededed;
-}
-.background-6 {
-  background: #f5f5f5;
-}
-.background-7 {
-  background: #f0f0f0;
-}
-.background-8 {
-  background: #e0e0e0;
-}
-.background-9 {
-  background: #d0d0d0;
+.task-table-container {
+  @apply w-screen h-full flex flex-col;
 }
 
-.background-img-1 {
-  background-image: url("/background/background1.jpg");
+.task-table-control {
+  @apply flex flex-wrap items-center p-1 backdrop-blur-md w-full;
+  background-color: rgba(39, 39, 39, 0.3);
 }
-.background-img-2 {
-  background-image: url("/background/background2.jpg");
-}
-.background-img-3 {
-  background-image: url("/background/background3.jpg");
-}
-.background-img-4 {
-  background-image: url("/background/background4.jpg");
+
+.task-table {
+  @apply flex flex-row overflow-auto items-start justify-start gap-2 p-2 snap-x;
 }

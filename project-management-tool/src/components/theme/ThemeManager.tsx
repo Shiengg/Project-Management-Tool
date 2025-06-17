@@ -8,7 +8,7 @@ export default async function ThemeManager({
 }) {
   const theme = await getTheme();
   return (
-    <div id="ThemeManager" className={`background-${theme}`}>
+    <div id="ThemeManager" className={`background-${theme} background-base`}>
       {children}
     </div>
   );
