@@ -49,6 +49,9 @@ body {
   text-orientation: mixed;
 }
 
+.base-checkbox {
+  @apply appearance-none size-3  outline-2 outline-gray-400 rounded-xs checked:bg-gray-400 ;
+}
 
 .input-box {
   @apply inset-shadow-sm p-2 rounded-md text-white   focus:outline-2 focus:outline-slate-400;
@@ -64,22 +67,22 @@ body {
 }
 
 .button-3 {
-  @apply cursor-pointer text-white p-1 px-2 rounded bg-slate-500 flex items-center justify-center;
+  @apply cursor-pointer text-white p-1 px-2 rounded bg-gray-500/50 flex items-center justify-center;
 }
 
 .button-3:active {
-  @apply bg-slate-300;
+  @apply bg-gray-300/50;
 }
 
 .button-2 {
-  @apply cursor-pointer text-sm text-slate-300 p-2 rounded-md bg-black flex items-center justify-center;
+  @apply cursor-pointer text-sm text-slate-300 bg-gray-800 p-2 rounded-md  flex items-center justify-center;
 }
 
 .button-2:hover {
-  @apply bg-slate-600;
+  @apply bg-gray-400/50;
 }
 .button-2:active {
-  @apply bg-slate-500;
+  @apply bg-gray-300/50;
 }
 
 .button-4 {
@@ -87,10 +90,10 @@ body {
 }
 
 .button-4:hover {
-  @apply bg-slate-500;
+  @apply bg-gray-400/50;
 }
 .button-4:active {
-  @apply bg-slate-400;
+  @apply bg-gray-300/50;
 }
 
 .nav {

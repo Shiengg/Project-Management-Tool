@@ -1,7 +1,8 @@
 import { Task } from "@/lib/types";
-import React, { useContext, useState } from "react";
-import { DNDContext } from "../TaskTable";
+import React, { useContext, useEffect, useState } from "react";
+import { DNDContext, ProjectContext } from "../TaskTable/TaskTable";
 import { Clock } from "lucide-react";
+import ProfileIcon from "@/components/UI/ProfileIcon";
 
 export default function TaskCard({ task }: { task: Task }) {
   const {
@@ -12,7 +13,12 @@ export default function TaskCard({ task }: { task: Task }) {
     handleDragOver,
     handleMarkComplete,
   } = useContext(DNDContext);
+  const project = useContext(ProjectContext);
   const [state, setState] = useState(task.state);
+
+  useEffect(() => {
+    setState(task.state);
+  }, [task.state]);
 
   return (
     <div
@@ -74,6 +80,16 @@ export default function TaskCard({ task }: { task: Task }) {
           className={`appearance-none size-3 outline-2  outline-inherit rounded-full checked:outline-none checked:bg-green-600`}
         ></input>
         <span className="text-sm font-mono">{task.name}</span>
+      </div>
+
+      <div className="flex flex-wrap gap-1 p-1">
+        {task.member?.map((id) => (
+          <ProfileIcon
+            key={id}
+            src={project?.member.find((mb) => mb.id === id)?.image || ""}
+            size={16}
+          />
+        ))}
       </div>
     </div>
   );
