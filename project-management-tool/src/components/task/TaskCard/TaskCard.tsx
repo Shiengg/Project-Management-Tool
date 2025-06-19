@@ -1,6 +1,6 @@
 import { Task } from "@/lib/types";
 import React, { useContext, useEffect, useState } from "react";
-import { DNDContext, ProjectContext } from "../TaskTable/TaskTable";
+import { DNDContext, ProjectContext, TaskDetailContext } from "../TaskTable/TaskTable";
 import { Clock } from "lucide-react";
 import ProfileIcon from "@/components/UI/ProfileIcon";
 
@@ -15,6 +15,7 @@ export default function TaskCard({ task }: { task: Task }) {
   } = useContext(DNDContext);
   const project = useContext(ProjectContext);
   const [state, setState] = useState(task.state);
+  const { setOpenTaskId } = useContext(TaskDetailContext);
 
   useEffect(() => {
     setState(task.state);
@@ -22,6 +23,7 @@ export default function TaskCard({ task }: { task: Task }) {
 
   return (
     <div
+      onClick={() => setOpenTaskId(task.id)}
       draggable
       onDragStart={(e) => {
         e.stopPropagation(); // prevent parent list from reacting
@@ -37,9 +39,8 @@ export default function TaskCard({ task }: { task: Task }) {
 
         handleDragOver(task.id, "task");
       }}
-      className={`task-card  ${draggingId === task.id ? "opacity-50" : ""} ${
-        hoverTaskId === task.id ? "outline-2 outline-blue-500" : ""
-      }`}
+      className={`task-card cursor-pointer ${draggingId === task.id ? "opacity-50" : ""} ${hoverTaskId === task.id ? "outline-2 outline-blue-500" : ""
+        }`}
     >
       {task.theme && (
         <div
@@ -49,11 +50,10 @@ export default function TaskCard({ task }: { task: Task }) {
 
       {task.due && (
         <span
-          className={`flex flex-row gap-1 items-center px-1 text-xs ${
-            task.state
-              ? "text-green-300 bg-green-800"
-              : "text-red-300 bg-red-800"
-          } `}
+          className={`flex flex-row gap-1 items-center px-1 text-xs ${task.state
+            ? "text-green-300 bg-green-800"
+            : "text-red-300 bg-red-800"
+            } `}
         >
           <Clock size={12} />
           {task.due.toLocaleString("en-GB", {
