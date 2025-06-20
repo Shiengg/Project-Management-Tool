@@ -23,6 +23,7 @@ import { toastError, toastSuccess } from "../../toast/toaster";
 import Menu from "../../UI/Menu";
 import FilterAction, { defaultFilter, filterTask } from "./FilterAction";
 import AddMemberForm from "./AddMemberForm";
+import TaskDetail from "./TaskDetail";
 
 type DNDContextType = {
   draggingId: string | null;
@@ -67,17 +68,27 @@ type FilterContextType = {
   >;
 };
 
+type TaskDetailContextType = {
+  openTaskId: string | null;
+  setOpenTaskId: (id: string | null) => void;
+};
+
+export const TaskDetailContext = createContext<TaskDetailContextType>({
+  openTaskId: null,
+  setOpenTaskId: () => { },
+});
+
 export const DNDContext = createContext<DNDContextType>({
   draggingId: null,
   hoverTaskId: null,
   hoverListId: null,
   dragType: null,
-  handleDragStart: () => {},
-  handleDragOver: () => {},
-  handleAddTask: () => {},
-  handleMarkComplete: () => {},
-  handleDeleteList: () => {},
-  handleMoveTask: () => {},
+  handleDragStart: () => { },
+  handleDragOver: () => { },
+  handleAddTask: () => { },
+  handleMarkComplete: () => { },
+  handleDeleteList: () => { },
+  handleMoveTask: () => { },
 });
 
 export const ProjectContext = createContext<Project | null>(null);
@@ -92,7 +103,7 @@ export const FilterContext = createContext<FilterContextType>({
     uncompleted: false,
   },
 
-  setFilter: () => {},
+  setFilter: () => { },
 });
 
 export default function TaskTable({ id }: { id: string }) {
@@ -146,10 +157,10 @@ export default function TaskTable({ id }: { id: string }) {
 
     setProject(
       (prev) =>
-        ({
-          ...prev,
-          list: updatedList,
-        } as Project)
+      ({
+        ...prev,
+        list: updatedList,
+      } as Project)
     );
 
     setDeleting(false);
@@ -165,10 +176,10 @@ export default function TaskTable({ id }: { id: string }) {
 
     setProject(
       (prev) =>
-        ({
-          ...prev,
-          list: updatedList,
-        } as Project)
+      ({
+        ...prev,
+        list: updatedList,
+      } as Project)
     );
     setDeleting(false);
   };
@@ -367,6 +378,8 @@ export default function TaskTable({ id }: { id: string }) {
     setHoverTaskId(null);
   }, [hoverListId]);
 
+  const [openTaskId, setOpenTaskId] = useState<string | null>(null);
+
   return (
     <ProjectContext.Provider value={project}>
       <FilterContext.Provider value={{ filter, setFilter }}>
@@ -384,127 +397,130 @@ export default function TaskTable({ id }: { id: string }) {
             handleMoveTask,
           }}
         >
-          <div
-            // onDragEnd={() => {
-            //   handleDrop(); // always called
-            // }}
-            onDrop={(e) => {
-              e.preventDefault(); // still needed if drop *does* happen
-              handleDrop();
-            }}
-            onDragOver={(e) => e.preventDefault()} // required to allow drops
-            className="task-table-container"
-          >
-            <div className="task-table-control z-40">
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-lg px-4">{project?.name}</span>
-                <button
-                  className="button-3"
-                  onClick={() => setExpand((prev) => !prev)}
-                >
-                  {expand ? <TableProperties /> : <ChartNoAxesColumn />}
-                </button>
-              </div>
-              <div className="ml-auto flex flex-row gap-2 items-center justify-end">
-                <Menu
-                  name="Filter"
-                  icon={
-                    JSON.stringify(defaultFilter) === JSON.stringify(filter) ? (
-                      <button className="bg-gray-500 rounded p-1">
-                        <ListFilter />
-                      </button>
-                    ) : (
-                      <div className="flex flex-row items-center  bg-gray-500 rounded overflow-hidden cursor-pointer">
-                        <div className="p-1 items-center flex gap-2 hover:bg-black">
-                          <ListFilter />
-                          <div className="bg-white text-black text-sm  gap-1 flex items-center rounded-full px-2">
-                            <span className="size-3 aspect-square rounded-full bg-blue-500"></span>
-                            <span>
-                              {
-                                filterTask(
-                                  filter,
-                                  project?.list.flatMap((tl) => tl.list) || []
-                                ).length
-                              }
-                            </span>
-                          </div>
-                        </div>
-
-                        <button
-                          className="hover:bg-black p-1 px-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setFilter(defaultFilter);
-                          }}
-                        >
-                          Clear All
-                        </button>
-                      </div>
-                    )
-                  }
-                  menu={<FilterAction />}
-                />
-                <Menu
-                  name="Add Member"
-                  icon={<button className="button-2">+ Add Member</button>}
-                  menu={<AddMemberForm />}
-                />
-              </div>
-            </div>
-            <div className="task-table grow">
-              {project?.list?.map((tl) => (
-                <TaskListComponent key={tl.id} list={tl} expand={expand} />
-              ))}
-              {isAdding ? (
-                <div className="flex flex-col gap-2 p-2 rounded-md bg-black">
-                  <input
-                    ref={inputRef}
-                    required
-                    type="text"
-                    placeholder="List name"
-                    className="input-box text-sm"
-                  />
-                  <div className="text-sm flex flex-row gap-1">
-                    <button className="button-3" onClick={handleAddList}>
-                      Add list
-                    </button>
-                    <button
-                      className="button-2"
-                      onClick={() => setIsAdding(false)}
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
+          <TaskDetailContext.Provider value={{ openTaskId, setOpenTaskId }}>
+            <div
+              // onDragEnd={() => {
+              //   handleDrop(); // always called
+              // }}
+              onDrop={(e) => {
+                e.preventDefault(); // still needed if drop *does* happen
+                handleDrop();
+              }}
+              onDragOver={(e) => e.preventDefault()} // required to allow drops
+              className="task-table-container"
+            >
+              <div className="task-table-control z-40">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-lg px-4">{project?.name}</span>
+                  <button
+                    className="button-3"
+                    onClick={() => setExpand((prev) => !prev)}
+                  >
+                    {expand ? <TableProperties /> : <ChartNoAxesColumn />}
+                  </button>
                 </div>
-              ) : (
-                <button
-                  onClick={() => setIsAdding(true)}
-                  className="p-2 rounded-md bg-slate-400/30 backdrop-blur-sm hover:bg-slate-400/60 flex flex-row items-center gap-2 font-semibold text-sm "
-                >
-                  {" "}
-                  <Plus /> Add new list
-                </button>
-              )}
-            </div>
-            {draggingId && (
-              <div
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  handleDragOver("", "del");
-                }}
-                onDragLeave={(e) => {
-                  setDeleting(false);
-                }}
-                className={`transition-colors z-50 fixed bottom-0 w-full duration-150 flex flex-col items-center gap-2 justify-between p-2   text-red-400 outline-2 outline-inherit 
+                <div className="ml-auto flex flex-row gap-2 items-center justify-end">
+                  <Menu
+                    name="Filter"
+                    icon={
+                      JSON.stringify(defaultFilter) === JSON.stringify(filter) ? (
+                        <button className="bg-gray-500 rounded p-1">
+                          <ListFilter />
+                        </button>
+                      ) : (
+                        <div className="flex flex-row items-center  bg-gray-500 rounded overflow-hidden cursor-pointer">
+                          <div className="p-1 items-center flex gap-2 hover:bg-black">
+                            <ListFilter />
+                            <div className="bg-white text-black text-sm  gap-1 flex items-center rounded-full px-2">
+                              <span className="size-3 aspect-square rounded-full bg-blue-500"></span>
+                              <span>
+                                {
+                                  filterTask(
+                                    filter,
+                                    project?.list.flatMap((tl) => tl.list) || []
+                                  ).length
+                                }
+                              </span>
+                            </div>
+                          </div>
+
+                          <button
+                            className="hover:bg-black p-1 px-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setFilter(defaultFilter);
+                            }}
+                          >
+                            Clear All
+                          </button>
+                        </div>
+                      )
+                    }
+                    menu={<FilterAction />}
+                  />
+                  <Menu
+                    name="Add Member"
+                    icon={<button className="button-2">+ Add Member</button>}
+                    menu={<AddMemberForm />}
+                  />
+                </div>
+              </div>
+              <div className="task-table grow">
+                {project?.list?.map((tl) => (
+                  <TaskListComponent key={tl.id} list={tl} expand={expand} />
+                ))}
+                {isAdding ? (
+                  <div className="flex flex-col gap-2 p-2 rounded-md bg-black">
+                    <input
+                      ref={inputRef}
+                      required
+                      type="text"
+                      placeholder="List name"
+                      className="input-box text-sm"
+                    />
+                    <div className="text-sm flex flex-row gap-1">
+                      <button className="button-3" onClick={handleAddList}>
+                        Add list
+                      </button>
+                      <button
+                        className="button-2"
+                        onClick={() => setIsAdding(false)}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setIsAdding(true)}
+                    className="p-2 rounded-md bg-slate-400/30 backdrop-blur-sm hover:bg-slate-400/60 flex flex-row items-center gap-2 font-semibold text-sm "
+                  >
+                    {" "}
+                    <Plus /> Add new list
+                  </button>
+                )}
+              </div>
+              {draggingId && (
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    handleDragOver("", "del");
+                  }}
+                  onDragLeave={(e) => {
+                    setDeleting(false);
+                  }}
+                  className={`transition-colors z-50 fixed bottom-0 w-full duration-150 flex flex-col items-center gap-2 justify-between p-2   text-red-400 outline-2 outline-inherit 
               ${deleting ? "bg-red-600" : "bg-red-900"}
               `}
-              >
-                <Trash />
-                <span>Drop here to remove</span>
-              </div>
-            )}
-          </div>
+                >
+                  <Trash />
+                  <span>Drop here to remove</span>
+                </div>
+              )}
+            </div>
+            {openTaskId && <TaskDetail taskId={openTaskId} />}
+          </TaskDetailContext.Provider>
         </DNDContext.Provider>
       </FilterContext.Provider>
     </ProjectContext.Provider>
