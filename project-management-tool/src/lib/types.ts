@@ -31,12 +31,6 @@ export type TaskList = {
   createdAt?: Date | string;
 };
 
-export type Comment = {
-  id?: string;
-  member: User;
-  text: string;
-  createdAt: Date | string;
-};
 
 export type Project = {
   id?: string;
@@ -55,7 +49,6 @@ export type Task = {
   theme: string;
   description: string;
   member: string[];
-  comment: Comment[];
   state: boolean;
   createdAt: Date | string;
   due: Date | string;

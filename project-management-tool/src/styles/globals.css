@@ -131,3 +131,9 @@ body {
 .task-table {
   @apply flex flex-row overflow-auto items-start justify-start gap-2 p-2 snap-x;
 }
+
+
+.SideBar {
+  @apply flex flex-row md:flex-col rounded-md overflow-hidden lg:h-full lg:max-h-[80%] w-full lg:w-fit ;
+ 
+}
