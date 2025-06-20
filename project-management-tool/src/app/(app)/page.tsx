@@ -1,7 +1,7 @@
 "use client";
 import TaskListComponent from "@/components/task/TaskList/TaskList";
 import TaskList from "@/components/task/TaskList/TaskList";
-import TaskTable from "@/components/task/TaskTable";
+import TaskTable from "@/components/task/TaskTable/TaskTable";
 import { createMockTaskList } from "@/services/mock/mock";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";

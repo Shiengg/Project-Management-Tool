@@ -54,7 +54,7 @@ export type Task = {
   name: string;
   theme: string;
   description: string;
-  member: User[];
+  member: string[];
   comment: Comment[];
   state: boolean;
   createdAt: Date | string;

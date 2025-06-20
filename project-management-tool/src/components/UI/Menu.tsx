@@ -1,5 +1,5 @@
 import { Ellipsis, X } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 
 export default function Menu({
   name,
@@ -12,6 +12,30 @@ export default function Menu({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const menuEl = menuRef.current;
+    if (!menuEl) return;
+
+    const rect = menuEl.getBoundingClientRect();
+
+    const overflowLeft = rect.left < 0;
+    const overflowBottom = rect.bottom > window.innerHeight;
+
+    if (overflowLeft || overflowBottom) menuEl.style.position = "fixed";
+    if (overflowLeft) {
+      menuEl.style.left = "0";
+      menuEl.style.right = "auto";
+    }
+
+    if (overflowBottom) {
+      menuEl.style.top = "100%";
+      menuEl.style.bottom = "auto"; // flip above
+    }
+  }, [open]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -24,15 +48,16 @@ export default function Menu({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   return (
-    <div className="relative" ref={ref} >
+    <div className="relative" ref={ref}>
       {open && (
         <div
-          className="fixed bottom-2 right-2 sm:top-full sm:left-0 sm:bottom-auto sm:right-auto overflow-hidden sm:absolute  z-50 shadow-md rounded-lg  outline-1 text-inherit flex flex-col min-w-[200px]"
+          ref={menuRef}
+          className="absolute top-[100%] right-0  overflow-hidden  z-50 shadow-md rounded-lg  outline-1 outline-gray-500/50  flex flex-col min-w-[250px] text-gray-400"
           style={{
             backgroundColor: `rgba(39, 39, 39, 1)`,
           }}
         >
-          <div className="grid grid-cols-3 items-center gap-1 py-1 px-2 w-full h-auto">
+          <div className="grid grid-cols-3 items-center gap-1 p-2 w-full h-auto">
             <div></div>
             <span className="font-semibold text-center">{name}</span>
             <button
@@ -42,7 +67,10 @@ export default function Menu({
               <X size={14} />
             </button>
           </div>
+          <div className="max-h-[500px] overflow-x-auto">
           {menu}
+
+          </div>
         </div>
       )}
 

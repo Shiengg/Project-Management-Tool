@@ -4,11 +4,12 @@ import { Task, TaskList } from "@/lib/types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import TaskCard from "../TaskCard/TaskCard";
 import { Ellipsis, Plus, X } from "lucide-react";
-import { DNDContext } from "../TaskTable";
+import { DNDContext, FilterContext } from "../TaskTable/TaskTable";
 import { getColorFromPercentage } from "@/lib/render";
 import Menu from "../../UI/Menu";
 import ActionList from "./ActionList";
 import { toastRequest, toastSuccess } from "@/components/toast/toaster";
+import { filterTask } from "../TaskTable/FilterAction";
 
 export default function TaskListComponent({
   list,
@@ -26,7 +27,9 @@ export default function TaskListComponent({
     handleDragOver,
     handleAddTask,
     handleDeleteList,
+    handleMoveTask,
   } = useContext(DNDContext);
+  const { filter: projectFilter } = useContext(FilterContext);
   const [sort, setSort] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [filter, setFilter] = useState<{
     myTask: boolean;
@@ -34,8 +37,8 @@ export default function TaskListComponent({
     uncompleted: boolean;
   }>({
     myTask: false,
-    completed: false,
-    uncompleted: false,
+    completed: projectFilter.completed,
+    uncompleted: projectFilter.uncompleted,
   });
   const [isExpand, setIsExpand] = useState(expand);
   const [tasks, setTasks] = useState(list.list);
@@ -54,6 +57,20 @@ export default function TaskListComponent({
     if (result) {
       handleDeleteList(list.id);
       toastSuccess("Task list removed");
+    }
+  };
+
+  const handleMoveAllTaskTo = async (id: string) => {
+    const result = await toastRequest(
+      "Do you want to move all task from this list?"
+    );
+    if (result) {
+    
+      [...tasks].forEach((t) => {
+      
+        handleMoveTask(t.id, id, null);
+      });
+      toastSuccess("Tasks moved");
     }
   };
 
@@ -108,6 +125,7 @@ export default function TaskListComponent({
           }
           menu={
             <ActionList
+              id={list.id}
               sort={sort}
               setSort={setSort}
               filter={filter}
@@ -116,6 +134,7 @@ export default function TaskListComponent({
               setFilter={setFilter}
               toggleAdd={setIsAdding}
               onDelete={handleDelete}
+              handleMoveAllTaskTo={handleMoveAllTaskTo}
             />
           }
         />
@@ -124,7 +143,7 @@ export default function TaskListComponent({
       {isExpand && (
         <>
           <ul className="task-list">
-            {tasks
+            {filterTask(projectFilter, tasks)
               ?.filter((t) => {
                 const isMine = !filter.myTask || false; // If not filtering by mine, accept all
                 const isCompletedMatch = filter.completed
