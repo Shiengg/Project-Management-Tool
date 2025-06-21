@@ -50,7 +50,7 @@ body {
 }
 
 .base-checkbox {
-  @apply appearance-none size-3  outline-2 outline-gray-400 rounded-xs checked:bg-gray-400 ;
+  @apply appearance-none size-3  outline-2 outline-gray-400 rounded-xs checked:bg-gray-400;
 }
 
 .input-box {
@@ -59,7 +59,7 @@ body {
 }
 
 .button {
-  @apply cursor-pointer text-black p-2 rounded-md bg-white flex items-center justify-center;
+  @apply cursor-pointer text-black  p-1 px-2 rounded-md bg-white flex items-center justify-center;
 }
 
 .button:active {
@@ -94,6 +94,15 @@ body {
 }
 .button-4:active {
   @apply bg-gray-300/50;
+}
+
+.button-5 {
+  @apply rounded-full shadow text-white/50 p-2;
+  background-color: rgba(39, 39, 39, 0.7);
+}
+
+.button-5:hover {
+  @apply text-white/70;
 }
 
 .nav {
@@ -132,8 +141,6 @@ body {
   @apply flex flex-row overflow-auto items-start justify-start gap-2 p-2 snap-x;
 }
 
-
 .SideBar {
-  @apply flex flex-row md:flex-col rounded-md overflow-hidden lg:h-full lg:max-h-[80%] w-full lg:w-fit ;
- 
+  @apply flex flex-row md:flex-col rounded-md overflow-hidden lg:h-full lg:max-h-[80%] w-full lg:w-fit;
 }

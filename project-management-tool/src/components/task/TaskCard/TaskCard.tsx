@@ -1,8 +1,13 @@
 import { Task } from "@/lib/types";
 import React, { useContext, useEffect, useState } from "react";
-import { DNDContext, ProjectContext, TaskDetailContext } from "../TaskTable/TaskTable";
+import {
+  DNDContext,
+  ProjectContext,
+  TaskDetailContext,
+} from "../TaskTable/TaskTable";
 import { Clock } from "lucide-react";
 import ProfileIcon from "@/components/UI/ProfileIcon";
+import { formatDate } from "@/lib/format";
 
 export default function TaskCard({ task }: { task: Task }) {
   const {
@@ -11,9 +16,9 @@ export default function TaskCard({ task }: { task: Task }) {
     dragType,
     handleDragStart,
     handleDragOver,
-    handleMarkComplete,
+    handleUpdateTask,
   } = useContext(DNDContext);
-  const project = useContext(ProjectContext);
+  const {project} = useContext(ProjectContext);
   const [state, setState] = useState(task.state);
   const { setOpenTaskId } = useContext(TaskDetailContext);
 
@@ -39,8 +44,9 @@ export default function TaskCard({ task }: { task: Task }) {
 
         handleDragOver(task.id, "task");
       }}
-      className={`task-card cursor-pointer ${draggingId === task.id ? "opacity-50" : ""} ${hoverTaskId === task.id ? "outline-2 outline-blue-500" : ""
-        }`}
+      className={`task-card cursor-pointer ${
+        draggingId === task.id ? "opacity-50" : ""
+      } ${hoverTaskId === task.id ? "outline-2 outline-blue-500" : ""}`}
     >
       {task.theme && (
         <div
@@ -50,20 +56,16 @@ export default function TaskCard({ task }: { task: Task }) {
 
       {task.due && (
         <span
-          className={`flex flex-row gap-1 items-center px-1 text-xs ${task.state
-            ? "text-green-300 bg-green-800"
-            : "text-red-300 bg-red-800"
-            } `}
+          className={`flex flex-row gap-1 items-center px-1 text-xs ${
+            task.state
+              ? "text-green-300 bg-green-800"
+              : new Date(task.due) < new Date()
+              ? "text-red-300 bg-red-800"
+              : "text-gray-500 bg-white"
+          } `}
         >
           <Clock size={12} />
-          {task.due.toLocaleString("en-GB", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false, // optional: for 24h format
-          })}
+          {formatDate(task.due)}
         </span>
       )}
 
@@ -71,13 +73,17 @@ export default function TaskCard({ task }: { task: Task }) {
         <input
           type="checkbox"
           checked={state}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
           onChange={(e) => {
             e.preventDefault();
-            handleMarkComplete(task.id);
+
+            handleUpdateTask({ ...task, state: e.target.checked });
             setState((prev) => !prev);
           }}
           title="mark complete"
-          className={`appearance-none size-3 outline-2  outline-inherit rounded-full checked:outline-none checked:bg-green-600`}
+          className={`appearance-none size-3 outline-2  outline-inherit rounded-full checked:outline-none checked:bg-green-600 cursor-pointer`}
         ></input>
         <span className="text-sm font-mono">{task.name}</span>
       </div>

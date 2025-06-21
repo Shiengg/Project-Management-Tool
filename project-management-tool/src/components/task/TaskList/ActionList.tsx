@@ -35,7 +35,7 @@ export default function ActionList({
   handleMoveAllTaskTo: (id: string) => void;
   onDelete: any;
 }) {
-  const project = useContext(ProjectContext);
+  const {project} = useContext(ProjectContext);
   const [moving, setMoving] = useState(false);
 
   return (

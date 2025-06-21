@@ -27,6 +27,7 @@ export default function TaskListComponent({
     handleDragOver,
     handleAddTask,
     handleDeleteList,
+    handleUpdateList,
     handleMoveTask,
   } = useContext(DNDContext);
   const { filter: projectFilter } = useContext(FilterContext);
@@ -46,6 +47,7 @@ export default function TaskListComponent({
   const [isAdding, setIsAdding] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
   const completion =
     tasks.length > 0
       ? (tasks.reduce((acc, t) => acc + (t.state ? 1 : 0), 0) / tasks.length) *
@@ -65,9 +67,7 @@ export default function TaskListComponent({
       "Do you want to move all task from this list?"
     );
     if (result) {
-    
       [...tasks].forEach((t) => {
-      
         handleMoveTask(t.id, id, null);
       });
       toastSuccess("Tasks moved");
@@ -109,18 +109,30 @@ export default function TaskListComponent({
         }}
       ></div>
       <div className={`flex ${isExpand ? "flex-row" : "flex-col"} gap-2 `}>
-        <div
-          className={`grow text-sm font-semibold rounded-md flex items-center  ${
+        <input
+          ref={nameRef}
+          defaultValue={list.name}
+          type="text"
+          className={`input-box grow text-sm font-semibold ${
             isExpand ? "" : "vertical-text"
           }`}
-        >
-          {list.name}
-        </div>{" "}
+          onBlur={(e) => {
+            const value = e.target.value.trim();
+            if (value === "") {
+              if (nameRef.current) {
+                nameRef.current.value = list.name ||"";
+              }
+            } else {
+              handleUpdateList(list.id, value);
+            }
+          }}
+        />
+
         <Menu
           name="actions"
           icon={
             <button className="button-2">
-              <Ellipsis size={14} />
+              <Ellipsis size={18} />
             </button>
           }
           menu={

@@ -117,7 +117,7 @@ export const filterTask = (
 
 export default function FilterAction({}) {
   const { filter, setFilter } = useContext(FilterContext);
-  const project = useContext(ProjectContext);
+  const {project} = useContext(ProjectContext);
   const ref = useRef<NodeJS.Timeout | null>(null);
   return (
     <ul className="flex flex-col [&>li]:hover:bg-white/10 [&>li]:px-3 [&>li]:p-2 text-xs [&>li]:cursor-pointer pb-2">

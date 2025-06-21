@@ -3,14 +3,18 @@
 
 import { getSocket } from "@/services/socket/socket";
 import { useState, useEffect } from "react";
+import { Socket } from "socket.io-client";
 
-const useSocket = (id: string): any => {
-  const [socket, setSocket] = useState(null);
+const useSocket = (id: string): Socket | null => {
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
     if (id) {
-      const socketInstance = getSocket(id);
-      setSocket(socketInstance);
+      const fetchSocket = async () => {
+        const socketInstance: Socket | null = await getSocket(id);
+        setSocket(socketInstance);
+      };
+      fetchSocket();
     }
   }, [id]);
 

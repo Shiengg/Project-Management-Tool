@@ -1,11 +1,13 @@
 import { Project, Task, TaskList } from "@/lib/types";
 import { createMockProject } from "@/services/mock/mock";
 import {
+  Bolt,
   ChartNoAxesColumn,
   ListFilter,
   Plus,
   TableProperties,
   Trash,
+  Users,
   X,
 } from "lucide-react";
 import React, {
@@ -22,8 +24,18 @@ import { Fascinate_Inline } from "next/font/google";
 import { toastError, toastSuccess } from "../../toast/toaster";
 import Menu from "../../UI/Menu";
 import FilterAction, { defaultFilter, filterTask } from "./FilterAction";
-import AddMemberForm from "./AddMemberForm";
+
 import TaskDetail from "./TaskDetail";
+import MemberBoard from "./MemberBoard";
+import Form from "@/components/UI/Form";
+import ProjectSetting from "./ProjectSetting";
+
+type ProjectContextType = {
+  project: Project | null;
+  handleUpdateProjectName: (name: string) => void;
+  handleUpdateProjectAdmin: (id: string) => void;
+  handleRemoveProjectMember: (id: string) => void;
+};
 
 type DNDContextType = {
   draggingId: string | null;
@@ -36,8 +48,10 @@ type DNDContextType = {
     type: "list" | "task" | null
   ) => void;
   handleAddTask: (listId: string, name: string) => void;
-  handleMarkComplete: (id: string) => void;
+  handleUpdateTask: (newTask: Task) => void;
   handleDeleteList: (id: string) => void;
+  handleUpdateList: (id: string, name: string) => void;
+
   handleMoveTask: (
     taskId: string,
     listId: string,
@@ -75,7 +89,7 @@ type TaskDetailContextType = {
 
 export const TaskDetailContext = createContext<TaskDetailContextType>({
   openTaskId: null,
-  setOpenTaskId: () => { },
+  setOpenTaskId: () => {},
 });
 
 export const DNDContext = createContext<DNDContextType>({
@@ -83,15 +97,21 @@ export const DNDContext = createContext<DNDContextType>({
   hoverTaskId: null,
   hoverListId: null,
   dragType: null,
-  handleDragStart: () => { },
-  handleDragOver: () => { },
-  handleAddTask: () => { },
-  handleMarkComplete: () => { },
-  handleDeleteList: () => { },
-  handleMoveTask: () => { },
+  handleDragStart: () => {},
+  handleDragOver: () => {},
+  handleAddTask: () => {},
+  handleUpdateTask: () => {},
+  handleDeleteList: () => {},
+  handleUpdateList: () => {},
+  handleMoveTask: () => {},
 });
 
-export const ProjectContext = createContext<Project | null>(null);
+export const ProjectContext = createContext<ProjectContextType>({
+  project: null,
+  handleUpdateProjectName: () => {},
+  handleUpdateProjectAdmin: () => {},
+  handleRemoveProjectMember: () => {},
+});
 export const FilterContext = createContext<FilterContextType>({
   filter: {
     keyword: "",
@@ -103,7 +123,7 @@ export const FilterContext = createContext<FilterContextType>({
     uncompleted: false,
   },
 
-  setFilter: () => { },
+  setFilter: () => {},
 });
 
 export default function TaskTable({ id }: { id: string }) {
@@ -126,6 +146,10 @@ export default function TaskTable({ id }: { id: string }) {
   const [hoverListId, setHoverListId] = useState<string | null>(null);
   const [expand, setExpand] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleUpdateProjectName = (name: string) => {};
+  const handleUpdateProjectAdmin = (id: string) => {};
+  const handleRemoveProjectMember = (id: string) => {};
 
   const handleDragStart = (id: string, type: "list" | "task" | null) => {
     setDraggingId(id);
@@ -152,15 +176,25 @@ export default function TaskTable({ id }: { id: string }) {
     toastSuccess("New task list added");
   };
 
+  const handleUpdateList = (id: string, name: string) => {
+    const updatedList = project?.list.map((tl) =>
+      tl.id === id ? { ...tl, name: name.length ? name : tl.name } : tl
+    );
+    setProject({
+      ...project,
+      list: updatedList,
+    } as Project);
+  };
+
   const handleDeleteList = (id: string) => {
     const updatedList = project?.list.filter((tl) => tl.id !== id) || [];
 
     setProject(
       (prev) =>
-      ({
-        ...prev,
-        list: updatedList,
-      } as Project)
+        ({
+          ...prev,
+          list: updatedList,
+        } as Project)
     );
 
     setDeleting(false);
@@ -176,12 +210,25 @@ export default function TaskTable({ id }: { id: string }) {
 
     setProject(
       (prev) =>
-      ({
-        ...prev,
-        list: updatedList,
-      } as Project)
+        ({
+          ...prev,
+          list: updatedList,
+        } as Project)
     );
     setDeleting(false);
+  };
+
+  const handleUpdateTask = (newTask: Task) => {
+    const updatedLists = project?.list.map((list) => {
+      const updatedTasks = list.list.map((task) =>
+        task.id === newTask.id ? newTask : task
+      );
+
+      return { ...list, list: updatedTasks };
+    });
+    setProject(
+      (prev) => ({ ...prev, list: updatedLists as TaskList[] } as Project)
+    );
   };
 
   const handleAddTask = (listId: string, name: string) => {
@@ -192,7 +239,6 @@ export default function TaskTable({ id }: { id: string }) {
       theme: "",
       description: "",
       member: [],
-      comment: [],
       state: false,
       createdAt: new Date(),
       due: "",
@@ -258,21 +304,6 @@ export default function TaskTable({ id }: { id: string }) {
     updatedProject.list.splice(toIndex, 0, movedList);
 
     setProject((prev) => updatedProject);
-  };
-
-  const handleMarkComplete = (id: string) => {
-    toastSuccess(id);
-    const updatedLists = project?.list.map((list) => {
-      const updatedTasks = list.list.map((task) =>
-        task.id === id ? { ...task, state: !task.state } : task
-      );
-
-      return { ...list, list: updatedTasks };
-    });
-    setProject(
-      (prev) => ({ ...prev, list: updatedLists as TaskList[] } as Project)
-    );
-    // setTaskList(updatedLists as TaskList[]);
   };
 
   const handleDragOver = (
@@ -381,7 +412,14 @@ export default function TaskTable({ id }: { id: string }) {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
 
   return (
-    <ProjectContext.Provider value={project}>
+    <ProjectContext.Provider
+      value={{
+        project,
+        handleUpdateProjectName,
+        handleUpdateProjectAdmin,
+        handleRemoveProjectMember,
+      }}
+    >
       <FilterContext.Provider value={{ filter, setFilter }}>
         <DNDContext.Provider
           value={{
@@ -391,9 +429,10 @@ export default function TaskTable({ id }: { id: string }) {
             dragType,
             handleDragStart,
             handleDragOver,
-            handleMarkComplete,
+            handleUpdateTask,
             handleAddTask,
             handleDeleteList,
+            handleUpdateList,
             handleMoveTask,
           }}
         >
@@ -411,7 +450,9 @@ export default function TaskTable({ id }: { id: string }) {
             >
               <div className="task-table-control z-40">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-lg px-4">{project?.name}</span>
+                  <span className="font-mono text-lg px-4">
+                    {project?.name}
+                  </span>
                   <button
                     className="button-3"
                     onClick={() => setExpand((prev) => !prev)}
@@ -423,7 +464,8 @@ export default function TaskTable({ id }: { id: string }) {
                   <Menu
                     name="Filter"
                     icon={
-                      JSON.stringify(defaultFilter) === JSON.stringify(filter) ? (
+                      JSON.stringify(defaultFilter) ===
+                      JSON.stringify(filter) ? (
                         <button className="bg-gray-500 rounded p-1">
                           <ListFilter />
                         </button>
@@ -459,10 +501,23 @@ export default function TaskTable({ id }: { id: string }) {
                     }
                     menu={<FilterAction />}
                   />
-                  <Menu
-                    name="Add Member"
-                    icon={<button className="button-2">+ Add Member</button>}
-                    menu={<AddMemberForm />}
+                  <Form
+                    name={"Member board"}
+                    icon={
+                      <button className="button-2 gap-2">
+                        <Users size={18} /> Member
+                      </button>
+                    }
+                    form={<MemberBoard />}
+                  />
+                  <Form
+                    name={"Project Setting"}
+                    icon={
+                      <button className="button-2 gap-2">
+                        <Bolt size={18} />
+                      </button>
+                    }
+                    form={<ProjectSetting />}
                   />
                 </div>
               </div>
@@ -519,7 +574,7 @@ export default function TaskTable({ id }: { id: string }) {
                 </div>
               )}
             </div>
-            {openTaskId && <TaskDetail taskId={openTaskId} />}
+            {openTaskId && <TaskDetail key={openTaskId} taskId={openTaskId} />}
           </TaskDetailContext.Provider>
         </DNDContext.Provider>
       </FilterContext.Provider>

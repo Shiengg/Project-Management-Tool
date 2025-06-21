@@ -1,9 +1,6 @@
 import Nav from "@/components/Layout/Nav";
 import type { Metadata } from "next";
 
-
-
-
 export const metadata: Metadata = {
   title: "Bello",
   icons: {
