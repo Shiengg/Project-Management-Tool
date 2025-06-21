@@ -1,4 +1,4 @@
-import { Task, TaskList, Comment, Project, User } from "@/lib/types";
+import { Task, TaskList, Project, User } from "@/lib/types";
 
 const mockUsers = [
   {
@@ -36,20 +36,10 @@ function createMockUser(id: string): User {
   };
 }
 
-function createMockComment(id: string, user: User): Comment {
-  return {
-    id: `comment_${id}`,
-    member: user,
-    text: `This is a sample comment #${id}`,
-    createdAt: new Date().toISOString(),
-  };
-}
+
 
 function createMockTask(id: string): Task {
-  const comments = [
-    createMockComment("1", mockUsers[0]),
-    createMockComment("2", mockUsers[1]),
-  ];
+
 
   const createdAt = getRandomDate(new Date(2023, 0, 1), new Date());
   const due = getRandomDate(
@@ -63,7 +53,7 @@ function createMockTask(id: string): Task {
     theme: Math.random() > 0.5 ? "img-3" : "",
     description: `This is a mock task number ${id}`,
     member: mockUsers.filter(() => Math.random() < 0.5).map((m) => m.id),
-    comment: comments,
+  
     state: Math.random() > 0.5,
     createdAt,
     due,
@@ -104,7 +94,7 @@ function createMockProject(id: string, listCount = 2): Project {
 
 export {
   createMockUser,
-  createMockComment,
+
   createMockTask,
   createMockTaskList,
   createMockProject,
