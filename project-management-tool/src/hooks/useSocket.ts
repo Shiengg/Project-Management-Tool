@@ -2,13 +2,16 @@
 "use client";
 
 import { getSocket } from "@/services/socket/socket";
+import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { Socket } from "socket.io-client";
 
-const useSocket = (id: string): Socket | null => {
+const useSocket = (): Socket | null => {
   const [socket, setSocket] = useState<Socket | null>(null);
+  const { data: session } = useSession();
 
   useEffect(() => {
+    const id = session?.user.id;
     if (id) {
       const fetchSocket = async () => {
         const socketInstance: Socket | null = await getSocket(id);
@@ -16,7 +19,7 @@ const useSocket = (id: string): Socket | null => {
       };
       fetchSocket();
     }
-  }, [id]);
+  }, [session?.user.id]);
 
   return socket;
 };

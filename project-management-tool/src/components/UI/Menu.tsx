@@ -1,3 +1,4 @@
+"use client";
 import { Ellipsis, X } from "lucide-react";
 import React, { useEffect, useReducer, useRef, useState } from "react";
 
@@ -20,20 +21,35 @@ export default function Menu({
     const menuEl = menuRef.current;
     if (!menuEl) return;
 
+    // Reset position first (important if user opens/closes repeatedly)
+    menuEl.style.position = "absolute";
+    menuEl.style.left = "";
+    menuEl.style.right = "";
+    menuEl.style.top = "";
+    menuEl.style.bottom = "";
+
     const rect = menuEl.getBoundingClientRect();
 
     const overflowLeft = rect.left < 0;
+    const overflowRight = rect.right > window.innerWidth;
     const overflowBottom = rect.bottom > window.innerHeight;
 
-    if (overflowLeft || overflowBottom) menuEl.style.position = "fixed";
-    if (overflowLeft) {
-      menuEl.style.left = "0";
-      menuEl.style.right = "auto";
+    if (overflowLeft || overflowRight || overflowBottom) {
+      menuEl.style.position = "fixed";
     }
 
     if (overflowBottom) {
-      menuEl.style.top = "100%";
-      menuEl.style.bottom = "auto"; // flip above
+      menuEl.style.bottom = "0";
+      menuEl.style.top = "auto";
+      menuEl.style.right = "auto";
+      menuEl.style.left = "0";
+    } 
+    if (overflowLeft) {
+      menuEl.style.left = "0";
+      menuEl.style.right = "auto";
+    } else if (overflowRight) {
+      menuEl.style.right = "0";
+      menuEl.style.left = "auto";
     }
   }, [open]);
 
@@ -67,10 +83,7 @@ export default function Menu({
               <X size={14} />
             </button>
           </div>
-          <div className="max-h-[500px] overflow-x-auto">
-          {menu}
-
-          </div>
+          <div className="max-h-[85vh] overflow-x-auto">{menu}</div>
         </div>
       )}
 

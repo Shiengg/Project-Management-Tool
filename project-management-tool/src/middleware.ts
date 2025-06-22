@@ -4,7 +4,7 @@ export const config = {
   matcher: [
     "/",                // Home
     "/dashboard/:path*", // Protected pages
-    "/profile/:path*",   // Protected pages
-    "/settings/:path*",
+    "/user/:path*",   // Protected pages
+    "/project/:path*",
   ],
 }

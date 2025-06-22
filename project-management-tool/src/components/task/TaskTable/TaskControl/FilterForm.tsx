@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useContext, useRef } from "react";
-import { FilterContext, ProjectContext } from "./TaskTable";
+import { FilterContext, ProjectContext } from "../TaskTable";
 import ProfileIcon from "@/components/UI/ProfileIcon";
 import { Clock, Search } from "lucide-react";
 import { Task } from "@/lib/types";
@@ -97,7 +97,7 @@ export const filterTask = (
     }
 
     // 5. Overdue
-    if (filter.overdue && (taskDue >= now)) {
+    if (filter.overdue && taskDue >= now) {
       return false;
     }
 
@@ -115,12 +115,12 @@ export const filterTask = (
   });
 };
 
-export default function FilterAction({}) {
+export default function FilterForm() {
   const { filter, setFilter } = useContext(FilterContext);
-  const {project} = useContext(ProjectContext);
+  const { project } = useContext(ProjectContext);
   const ref = useRef<NodeJS.Timeout | null>(null);
   return (
-    <ul className="flex flex-col [&>li]:hover:bg-white/10 [&>li]:px-3 [&>li]:p-2 text-xs [&>li]:cursor-pointer pb-2">
+    <ul className="flex flex-col [&>label]:hover:bg-white/10 [&>label]:px-3 [&>label]:p-2 text-xs [&>label]:cursor-pointer pb-2">
       <hr />
       <div className="text-left p-1 py-2 text-sm font-semibold">Keyword</div>
       <div className="flex flex-row items-center px-2 bg-white/10 p-1">
@@ -140,83 +140,74 @@ export default function FilterAction({}) {
           placeholder="Search"
           className="input-box grow"
         />
-        <Search size={24} className="p-1"/>
+        <Search size={24} className="p-1" />
       </div>
       <hr />
       <div className="text-left p-1 py-2 text-sm font-semibold">State</div>
-      <li>
-        <label
-          htmlFor="completed"
-          className="flex items-center gap-2 cursor-pointer"
-        >
-          <input
-            className="base-checkbox"
-            type="checkbox"
-            checked={filter.completed}
-            onChange={() =>
-              setFilter((prev) => ({
-                ...prev,
-                completed: !prev.completed,
-                uncompleted: false,
-              }))
-            }
-            id="completed"
-          />
-          <span>Completed</span>
-        </label>
-      </li>
-      <li>
-        <label
-          htmlFor="uncompleted"
-          className="flex items-center gap-2 cursor-pointer"
-        >
-          <input
-            className="base-checkbox"
-            type="checkbox"
-            checked={filter.uncompleted}
-            onChange={() =>
-              setFilter((prev) => ({
-                ...prev,
-                completed: false,
-                uncompleted: !prev.uncompleted,
-              }))
-            }
-            id="uncompleted"
-          />
-          <span>Uncompleted</span>
-        </label>
-      </li>
+      <label
+        htmlFor="completed"
+        className="flex items-center gap-2 cursor-pointer"
+      >
+        <input
+          className="base-checkbox"
+          type="checkbox"
+          checked={filter.completed}
+          onChange={() =>
+            setFilter((prev) => ({
+              ...prev,
+              completed: !prev.completed,
+              uncompleted: false,
+            }))
+          }
+          id="completed"
+        />
+        <span>Completed</span>
+      </label>
+      <label
+        htmlFor="uncompleted"
+        className="flex items-center gap-2 cursor-pointer"
+      >
+        <input
+          className="base-checkbox"
+          type="checkbox"
+          checked={filter.uncompleted}
+          onChange={() =>
+            setFilter((prev) => ({
+              ...prev,
+              completed: false,
+              uncompleted: !prev.uncompleted,
+            }))
+          }
+          id="uncompleted"
+        />
+        <span>Uncompleted</span>
+      </label>
       <br />
       <hr />
       <div className="text-left p-1 py-2 text-sm font-semibold">
         Assigned Member
       </div>
-      <li>
-        <label
-          htmlFor="notAssign"
-          className="flex items-center gap-2 cursor-pointer"
-        >
-          <input
-            className="base-checkbox"
-            type="checkbox"
-            checked={filter.notAssign}
-            onChange={() =>
-              setFilter((prev) => ({
-                ...prev,
-                notAssign: !prev.notAssign,
-              }))
-            }
-            id="notAssign"
-          />
-          <span>No Members</span>
-        </label>
-      </li>
+      <label
+        htmlFor="notAssign"
+        className="flex items-center gap-2 cursor-pointer"
+      >
+        <input
+          className="base-checkbox"
+          type="checkbox"
+          checked={filter.notAssign}
+          onChange={() =>
+            setFilter((prev) => ({
+              ...prev,
+              notAssign: !prev.notAssign,
+            }))
+          }
+          id="notAssign"
+        />
+        <span>No Members</span>
+      </label>
       {project?.member?.map((m) => (
-        <li key={m.id}>
-          <label
-            htmlFor={m.id}
-            className="flex items-center gap-2 cursor-pointer"
-          >
+        <label htmlFor={m.id} key={m.id}>
+          <div className="flex items-center gap-2 cursor-pointer">
             <input
               className="base-checkbox"
               type="checkbox"
@@ -238,13 +229,13 @@ export default function FilterAction({}) {
                 <div className="italic opacity-50">{m.email}</div>
               </div>
             </div>
-          </label>
-        </li>
+          </div>
+        </label>
       ))}
       <br />
       <hr />
       <div className="text-left p-1 py-2 text-sm font-semibold">Due Date</div>
-      <li>
+     
         <label
           htmlFor="overdue"
           className="flex items-center gap-2 cursor-pointer"
@@ -270,8 +261,7 @@ export default function FilterAction({}) {
             Overdue
           </div>
         </label>
-      </li>
-      <li>
+     
         <label
           htmlFor="dueTomorrow"
           className="flex items-center gap-2 cursor-pointer"
@@ -297,10 +287,9 @@ export default function FilterAction({}) {
             Due in the next day
           </div>
         </label>
-      </li>{" "}
-      <li>
+     
         <label
-          htmlFor="dueNextWeek"
+          htmlFor="dueThisWeek"
           className="flex items-center gap-2 cursor-pointer"
         >
           <input
@@ -313,20 +302,19 @@ export default function FilterAction({}) {
                 due: prev.due === 2 ? 0 : 2,
               }))
             }
-            id="dueNextWeek"
+            id="dueThisWeek"
           />
           <div className="flex flex-row gap-1 items-center">
             <Clock
               size={24}
               className="text-white bg-gray-400 rounded-full p-1"
             />{" "}
-            Due in the next week
+            Due in this week
           </div>
         </label>
-      </li>{" "}
-      <li>
+     
         <label
-          htmlFor="dueNextMonth"
+          htmlFor="dueThisMonth"
           className="flex items-center gap-2 cursor-pointer"
         >
           <input
@@ -339,17 +327,17 @@ export default function FilterAction({}) {
                 due: prev.due === 3 ? 0 : 3,
               }))
             }
-            id="dueNextMonth"
+            id="dueThisMonth"
           />
           <div className="flex flex-row gap-1 items-center">
             <Clock
               size={24}
               className="text-white bg-gray-400 rounded-full p-1"
             />{" "}
-            Due in the next month
+            Due in this month
           </div>
         </label>
-      </li>
+    
     </ul>
   );
 }

@@ -1,3 +1,4 @@
+import { theme } from "@/components/theme/ThemeManager";
 import { Task, TaskList, Project, User } from "@/lib/types";
 
 const mockUsers = [
@@ -36,11 +37,7 @@ function createMockUser(id: string): User {
   };
 }
 
-
-
 function createMockTask(id: string): Task {
-
-
   const createdAt = getRandomDate(new Date(2023, 0, 1), new Date());
   const due = getRandomDate(
     createdAt,
@@ -53,7 +50,7 @@ function createMockTask(id: string): Task {
     theme: Math.random() > 0.5 ? "img-3" : "",
     description: `This is a mock task number ${id}`,
     member: mockUsers.filter(() => Math.random() < 0.5).map((m) => m.id),
-  
+
     state: Math.random() > 0.5,
     createdAt,
     due,
@@ -83,18 +80,24 @@ function createMockProject(id: string, listCount = 2): Project {
   return {
     id,
     admin: mockUsers[0].id,
-    name: "Mock Project",
+    name: "My New Project",
     description: "Mock Project Description",
     member: mockUsers,
     list: lists,
-    state: Math.random() > 0.5,
+    state: Math.floor(Math.random() * 2.9) as 0 | 1 | 2,
     createdAt: new Date(),
+    theme: theme.flatMap((ct) => ct.background.flatMap((bg) => bg))[
+      Math.round(
+        Math.random() *
+          theme.flatMap((ct) => ct.background.flatMap((bg) => bg)).length -
+          1
+      )
+    ],
   };
 }
 
 export {
   createMockUser,
-
   createMockTask,
   createMockTaskList,
   createMockProject,

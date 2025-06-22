@@ -8,44 +8,51 @@ import {
   NOTIFICATION_CHANNEL,
   PROJECT_CHANNEL,
 } from "@/constant/socketChannel";
+import { type Notification } from "@/lib/types";
+import NotificationItem from "./NotifiationItem/NotifcationItem";
+import { getNotification } from "@/services/notificationService";
+import { toastNotification } from "../toast/toaster";
 
-export default function Notification() {
-  const { data: session } = useSession();
-  const socket = useSocket(session?.user.id || "");
-  const [notification, setNotification] = useState<
-    {
-      projectId: string;
-      projectName: string;
-      email: string;
-      createdAt: Date | string;
-    }[]
-  >([]);
+export default function Notification({ id }: { id: string }) {
+  const socket = useSocket();
+  const [notification, setNotification] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleAccept = (projectId: string, email: string) => {
-    setNotification((prev) =>
-      prev.filter((n) => n.projectId !== projectId && n.email !== email)
-    );
+  const handleAction = async (id: string, state: boolean) => {
+    setNotification((prev) => prev.filter((n) => n.id !== id));
   };
 
-  const handleNotify = ({
-    projectId,
-    projectName,
-    email,
-  }: {
-    projectId: string;
-    projectName: string;
-    email: string;
-  }) => {
-    setNotification((prev) => [
-      {
-        projectId,
-        projectName,
-        email,
+  const handleNotify = (notification: Notification) => {
+    setNotification((prev) => [notification, ...prev]);
+    toastNotification(notification);
+  };
+
+  const textNotify = async () => {
+    if (socket) {
+      socket.emit(PROJECT_CHANNEL.ADD_MEMBER, {
+        userIds: [id],
+        id: "id" + Math.random() * 123,
+        projectId: "123",
+        projectName: "TEST",
+        email: "test@gmail.com",
         createdAt: new Date(),
-      },
-      ...prev,
-    ]);
+      });
+    }
   };
+
+  const fetchNotification = async () => {
+    if (id) {
+      setIsLoading(true);
+      getNotification(id).then((res) => {
+        setNotification((prev) => [...prev, ...res]);
+        setTimeout(() => setIsLoading(false), 500);
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchNotification();
+  }, [id]);
 
   useEffect(() => {
     if (!socket) return;
@@ -56,12 +63,16 @@ export default function Notification() {
       socket.off(PROJECT_CHANNEL.ADD_MEMBER, handleNotify);
     };
   }, [socket]);
+
   return (
     <Menu
-      name="Invitations"
+      name="Notification"
       icon={
         notification.length ? (
-          <div className="flex flex-row p-1 bg-white rounded gap-1 text-gray-600 items-center">
+          <div
+            className="flex flex-row p-1 bg-white rounded gap-1 text-gray-600 items-center"
+            onClick={textNotify}
+          >
             <span className="px-2 font-semibold text-sm">
               {notification.length}
             </span>
@@ -72,7 +83,7 @@ export default function Notification() {
         )
       }
       menu={
-        <ul className="flex flex-col">
+        <ul className="flex flex-col p-1 gap-1 w-[300px]">
           {notification
             ?.sort(
               (a, b) =>
@@ -80,12 +91,11 @@ export default function Notification() {
                 new Date(b.createdAt).getTime()
             )
             .map((n) => (
-              <li key={n.createdAt.toString()}>
-                {n.email}{" "}
-                <button onClick={() => handleAccept(n.projectId, n.email)}>
-                  accept
-                </button>
-              </li>
+              <NotificationItem
+                key={n.id}
+                notification={n}
+                handleAction={handleAction}
+              />
             ))}
         </ul>
       }

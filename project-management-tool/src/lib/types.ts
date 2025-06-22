@@ -31,16 +31,16 @@ export type TaskList = {
   createdAt?: Date | string;
 };
 
-
 export type Project = {
-  id?: string;
-  name?: string;
+  id: string;
+  name: string;
   description: string;
   admin: string;
   member: User[];
   list: TaskList[];
-  state: boolean;
+  state: 0 | 1 | 2;
   createdAt: Date | string;
+  theme: string;
 };
 
 export type Task = {
@@ -52,4 +52,12 @@ export type Task = {
   state: boolean;
   createdAt: Date | string;
   due: Date | string;
+};
+
+export type Notification = {
+  id: string;
+  projectId: string;
+  projectName: string;
+  email: string;
+  createdAt: Date | string;
 };

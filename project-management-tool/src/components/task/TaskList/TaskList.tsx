@@ -4,20 +4,15 @@ import { Task, TaskList } from "@/lib/types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import TaskCard from "../TaskCard/TaskCard";
 import { Ellipsis, Plus, X } from "lucide-react";
-import { DNDContext, FilterContext } from "../TaskTable/TaskTable";
+import { FilterContext, ViewContext } from "../TaskTable/TaskTable";
 import { getColorFromPercentage } from "@/lib/render";
 import Menu from "../../UI/Menu";
 import ActionList from "./ActionList";
 import { toastRequest, toastSuccess } from "@/components/toast/toaster";
-import { filterTask } from "../TaskTable/FilterAction";
+import { filterTask } from "../TaskTable/TaskControl/FilterForm";
+import { DNDContext } from "../TaskTable/TaskBoard/TaskBoard";
 
-export default function TaskListComponent({
-  list,
-  expand,
-}: {
-  list: TaskList;
-  expand: boolean;
-}) {
+export default function TaskListComponent({ list }: { list: TaskList }) {
   const {
     hoverTaskId,
     hoverListId,
@@ -31,6 +26,7 @@ export default function TaskListComponent({
     handleMoveTask,
   } = useContext(DNDContext);
   const { filter: projectFilter } = useContext(FilterContext);
+  const { view } = useContext(ViewContext);
   const [sort, setSort] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [filter, setFilter] = useState<{
     myTask: boolean;
@@ -41,7 +37,7 @@ export default function TaskListComponent({
     completed: projectFilter.completed,
     uncompleted: projectFilter.uncompleted,
   });
-  const [isExpand, setIsExpand] = useState(expand);
+  const [isExpand, setIsExpand] = useState(false);
   const [tasks, setTasks] = useState(list.list);
 
   const [isAdding, setIsAdding] = useState(false);
@@ -74,7 +70,7 @@ export default function TaskListComponent({
     }
   };
 
-  useEffect(() => setIsExpand(expand), [expand]);
+  useEffect(() => setIsExpand(view), [view]);
   useEffect(() => {
     setTasks(list.list);
   }, [list]);
@@ -90,10 +86,7 @@ export default function TaskListComponent({
         e.preventDefault();
         handleDragOver(list.id, "list");
       }}
-      className={`task-list-container  
-        ${draggingId === list.id ? "opacity-50" : ""} 
-       
-        `}
+      className={`task-list-container overflow-visible  ${draggingId === list.id ? "opacity-50" : ""} `}
       style={{
         outline: hoverListId === list.id ? "2px solid  blue" : "none",
       }}
@@ -120,7 +113,7 @@ export default function TaskListComponent({
             const value = e.target.value.trim();
             if (value === "") {
               if (nameRef.current) {
-                nameRef.current.value = list.name ||"";
+                nameRef.current.value = list.name || "";
               }
             } else {
               handleUpdateList(list.id, value);
