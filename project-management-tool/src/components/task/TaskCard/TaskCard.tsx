@@ -1,13 +1,13 @@
 import { Task } from "@/lib/types";
 import React, { useContext, useEffect, useState } from "react";
-import {
-  DNDContext,
-  ProjectContext,
-  TaskDetailContext,
-} from "../TaskTable/TaskTable";
+import { ProjectContext } from "../TaskTable/TaskTable";
 import { Clock } from "lucide-react";
 import ProfileIcon from "@/components/UI/ProfileIcon";
 import { formatDate } from "@/lib/format";
+import {
+  DNDContext,
+  TaskDetailContext,
+} from "../TaskTable/TaskBoard/TaskBoard";
 
 export default function TaskCard({ task }: { task: Task }) {
   const {
@@ -18,7 +18,7 @@ export default function TaskCard({ task }: { task: Task }) {
     handleDragOver,
     handleUpdateTask,
   } = useContext(DNDContext);
-  const {project} = useContext(ProjectContext);
+  const { project } = useContext(ProjectContext);
   const [state, setState] = useState(task.state);
   const { setOpenTaskId } = useContext(TaskDetailContext);
 
@@ -46,7 +46,7 @@ export default function TaskCard({ task }: { task: Task }) {
       }}
       className={`task-card cursor-pointer ${
         draggingId === task.id ? "opacity-50" : ""
-      } ${hoverTaskId === task.id ? "outline-2 outline-blue-500" : ""}`}
+      } ${hoverTaskId === task.id ? "outline-2 outline-blue-500" : "hover:outline-2 outline-white"}`}
     >
       {task.theme && (
         <div
@@ -83,7 +83,7 @@ export default function TaskCard({ task }: { task: Task }) {
             setState((prev) => !prev);
           }}
           title="mark complete"
-          className={`appearance-none size-3 outline-2  outline-inherit rounded-full checked:outline-none checked:bg-green-600 cursor-pointer`}
+          className={`appearance-none min-w-3 aspect-square outline-2  outline-inherit rounded-full checked:outline-none checked:bg-green-600 cursor-pointer`}
         ></input>
         <span className="text-sm font-mono">{task.name}</span>
       </div>

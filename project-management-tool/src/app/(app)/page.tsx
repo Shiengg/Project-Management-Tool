@@ -1,17 +1,7 @@
-"use client";
-import TaskListComponent from "@/components/task/TaskList/TaskList";
-import TaskList from "@/components/task/TaskList/TaskList";
-import TaskTable from "@/components/task/TaskTable/TaskTable";
-import { createMockTaskList } from "@/services/mock/mock";
-import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  const { data: session } = useSession();
 
-  return (
-    <div className="size-full">
-      <TaskTable id={"mock"}/>
-    </div>
-  );
+export default function Default() {
+  redirect("/dashboard");
+  return null;
 }

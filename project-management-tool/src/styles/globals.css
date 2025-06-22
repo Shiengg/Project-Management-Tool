@@ -58,8 +58,13 @@ body {
   background-color: rgba(39, 39, 39, 0.5);
 }
 
+.text-area {
+  @apply p-2   rounded-lg whitespace-pre-wrap min-h-[100px] w-full resize-none;
+  background-color: rgba(39, 39, 39, 0.5);
+}
+
 .button {
-  @apply cursor-pointer text-black  p-1 px-2 rounded-md bg-white flex items-center justify-center;
+  @apply cursor-pointer text-black  p-1 px-2 rounded-md bg-white flex items-center gap-1  justify-center font-semibold;
 }
 
 .button:active {
@@ -67,7 +72,7 @@ body {
 }
 
 .button-3 {
-  @apply cursor-pointer text-white p-1 px-2 rounded bg-gray-500/50 flex items-center justify-center;
+  @apply cursor-pointer text-white p-1 px-2 rounded bg-gray-500/50 flex items-center justify-center gap-1;
 }
 
 .button-3:active {
@@ -75,7 +80,7 @@ body {
 }
 
 .button-2 {
-  @apply cursor-pointer text-sm text-slate-300 bg-gray-800 p-2 rounded-md  flex items-center justify-center;
+  @apply cursor-pointer text-sm text-slate-300 bg-gray-800 p-2 rounded-md  flex items-center justify-center gap-1;
 }
 
 .button-2:hover {
@@ -86,7 +91,7 @@ body {
 }
 
 .button-4 {
-  @apply cursor-pointer text-sm text-slate-300 p-2 rounded-md flex items-center justify-center;
+  @apply cursor-pointer text-sm text-slate-300 p-2 rounded-md flex items-center justify-center gap-1;
 }
 
 .button-4:hover {
@@ -115,6 +120,11 @@ body {
   background-color: rgba(39, 39, 39, 0.7);
 }
 
+.project-card {
+  @apply rounded-md overflow-hidden shadow-md cursor-pointer  w-[170px]  text-gray-400;
+  background-color: #272727;
+}
+
 .task-list-container {
   @apply rounded-md bg-black p-2 size-fit flex flex-col gap-3 text-slate-300 snap-center max-h-[80vh];
 }
@@ -124,16 +134,16 @@ body {
 }
 
 .task-card {
-  @apply rounded-md overflow-hidden cursor-pointer hover:outline-2 outline-white min-w-[250px] min-h-fit;
+  @apply rounded-md overflow-hidden  cursor-pointer  w-[250px] min-h-fit;
   background-color: #272727;
 }
 
 .task-table-container {
-  @apply w-screen h-full flex flex-col;
+  @apply w-screen h-full flex flex-col ;
 }
 
 .task-table-control {
-  @apply flex flex-wrap items-center p-1 backdrop-blur-md w-full;
+  @apply flex flex-row items-center p-1  w-screen;
   background-color: rgba(39, 39, 39, 0.3);
 }
 
@@ -143,4 +153,41 @@ body {
 
 .SideBar {
   @apply flex flex-row md:flex-col rounded-md overflow-hidden lg:h-full lg:max-h-[80%] w-full lg:w-fit;
+}
+
+.notification-item {
+  @apply p-1 shadow rounded bg-slate-800 text-gray-400 text-sm;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  margin: auto;
+  width: 32px;
+  aspect-ratio: 1;
+  background: linear-gradient(
+        #0000 calc(1 * 100% / 6),
+        #272727 0 calc(3 * 100% / 6),
+        #0000 0
+      )
+      left bottom,
+    linear-gradient(
+        #0000 calc(2 * 100% / 6),
+        #272727 0 calc(4 * 100% / 6),
+        #0000 0
+      )
+      center bottom,
+    linear-gradient(
+        #0000 calc(3 * 100% / 6),
+        #272727 0 calc(5 * 100% / 6),
+        #0000 0
+      )
+      right bottom;
+  background-size: 20% 600%;
+  background-repeat: no-repeat;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  100% {
+    background-position: left top, center top, right top;
+  }
 }

@@ -39,12 +39,12 @@ export default function ActionList({
   const [moving, setMoving] = useState(false);
 
   return (
-    <ul className="flex flex-col [&_li]:hover:bg-white/10 [&_li]:px-3 [&_li]:p-2 text-sm [&_li]:cursor-pointer pb-2">
-      <li onClick={() => toggleAdd(true)}>Add Task</li>
-      <li onClick={() => toggleExpand(!expand)}>
+    <ul className="flex flex-col [&_label]:hover:bg-white/10 [&_label]:px-3 [&_label]:p-2 text-sm [&_label]:cursor-pointer pb-2">
+      <label onClick={() => toggleAdd(true)}>Add Task</label>
+      <label onClick={() => toggleExpand(!expand)}>
         {expand ? "Collapse" : "Expand"}
-      </li>
-      <li onClick={onDelete}>Delete List</li>
+      </label>
+      <label onClick={onDelete}>Delete List</label>
       {moving ? (
         <div className="flex flex-col ">
           <div className="flex flex-row px-3 p-2 gap-3 ">
@@ -60,23 +60,23 @@ export default function ActionList({
             {project?.list
               ?.filter((tl) => tl.id !== id)
               .map((tl) => (
-                <li key={tl.id} onClick={() => handleMoveAllTaskTo(tl.id)}>
+                <label key={tl.id} onClick={() => handleMoveAllTaskTo(tl.id)}>
                   {tl.name}
-                </li>
+                </label>
               ))}
           </ul>
         </div>
       ) : (
-        <li onClick={() => setMoving(true)} className="flex flex-row">
+        <label onClick={() => setMoving(true)} className="flex flex-row">
           Move all tasks to{" "}
           <div className=" -mx-3 -m-2 ml-auto p-2">
             <ChevronRight size={16} />
           </div>
-        </li>
+        </label>
       )}
       <hr />
       <div className="text-left py-2 p-1 text-sm font-semibold">Sorting</div>
-      <li>
+ 
         <label
           htmlFor="Latest"
           className="flex items-center gap-2 cursor-pointer"
@@ -92,8 +92,7 @@ export default function ActionList({
           />
           <span>Latest</span>
         </label>
-      </li>
-      <li>
+      
         <label
           htmlFor="Oldest"
           className="flex items-center gap-2 cursor-pointer"
@@ -109,8 +108,7 @@ export default function ActionList({
           />
           <span>Oldest</span>
         </label>
-      </li>
-      <li>
+    
         <label
           htmlFor="Name"
           className="flex items-center gap-2 cursor-pointer"
@@ -126,8 +124,7 @@ export default function ActionList({
           />
           <span>Name</span>
         </label>
-      </li>
-      <li>
+    
         <label htmlFor="Due" className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
@@ -140,11 +137,11 @@ export default function ActionList({
           />
           <span>Due Date</span>
         </label>
-      </li>
+     
 
       <hr />
       <div className="text-left p-1 py-2 text-sm font-semibold">Filter</div>
-      <li>
+   
         <label
           htmlFor="myTask"
           className="flex items-center gap-2 cursor-pointer"
@@ -163,8 +160,7 @@ export default function ActionList({
           />
           <span>My Task</span>
         </label>
-      </li>
-      <li>
+    
         <label
           htmlFor="completed"
           className="flex items-center gap-2 cursor-pointer"
@@ -184,8 +180,7 @@ export default function ActionList({
           />
           <span>Completed</span>
         </label>
-      </li>
-      <li>
+     
         <label
           htmlFor="uncompleted"
           className="flex items-center gap-2 cursor-pointer"
@@ -205,7 +200,7 @@ export default function ActionList({
           />
           <span>Uncompleted</span>
         </label>
-      </li>
+     
     </ul>
   );
 }

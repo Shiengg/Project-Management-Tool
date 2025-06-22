@@ -5,22 +5,19 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
-import {
-  DNDContext,
-  ProjectContext,
-  TaskDetailContext,
-} from "../TaskTable/TaskTable";
+import { ProjectContext } from "../TaskTable/TaskTable";
 import { X, Clock, MessageSquare, Edit, Image } from "lucide-react";
 import ProfileIcon from "@/components/UI/ProfileIcon";
 import Menu from "@/components/UI/Menu";
 import { theme } from "@/components/theme/ThemeManager";
 import { toastSuccess } from "@/components/toast/toaster";
 import { formatDate, formatDateTimeLocal } from "@/lib/format";
+import { DNDContext, TaskDetailContext } from "./TaskBoard/TaskBoard";
 
 export default function TaskDetail({ taskId }: { taskId: string }) {
   const { handleUpdateTask } = useContext(DNDContext);
   const { setOpenTaskId } = useContext(TaskDetailContext);
-  const {project} = useContext(ProjectContext);
+  const { project } = useContext(ProjectContext);
   const [task, setTask] = useState<Task | null>(null);
   const [isAssigning, setIsAssigning] = useState(false);
 
@@ -92,7 +89,11 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
                                 )
                               }
                               key={bg}
-                              className={`rounded-xl aspect-[2/1] max-w-[150px] grow min-w-[100px]  shadow-md background-base  background-${bg}`}
+                              className={`rounded-xl aspect-[2/1] max-w-[150px] grow min-w-[100px]  shadow-md background-base  background-${bg}  ${
+                                task?.theme === bg
+                                  ? "outline-2 outline-gray-500"
+                                  : ""
+                              }`}
                             />
                           ))}
                         </div>
@@ -146,29 +147,25 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
               <p>{formatDate(task.createdAt)}</p>
             </div>
 
-            {task.due && (
-              <div>
-                <label className="text-sm text-gray-400 flex items-center gap-2">
-                  <Clock size={14} /> Due Date
-                </label>
-                <input
-                  type="datetime-local"
-                  value={formatDateTimeLocal(task.due)}
-                  onChange={(e) =>
-                    setTask(
-                      (prev) => ({ ...prev, due: e.target.value } as Task)
-                    )
-                  }
-                  className={`p-2 rounded text-black ${
-                    task.state
-                      ? "bg-green-500"
-                      : new Date(task.due) < new Date()
-                      ? "bg-red-500"
-                      : "bg-white"
-                  }`}
-                />
-              </div>
-            )}
+            <div>
+              <label className="text-sm text-gray-400 flex items-center gap-2">
+                <Clock size={14} /> Due Date
+              </label>
+              <input
+                type="datetime-local"
+                value={formatDateTimeLocal(task.due)}
+                onChange={(e) =>
+                  setTask((prev) => ({ ...prev, due: e.target.value } as Task))
+                }
+                className={`p-2 rounded text-black ${
+                  task.state
+                    ? "bg-green-500"
+                    : new Date(task.due) < new Date()
+                    ? "bg-red-500"
+                    : "bg-white"
+                }`}
+              />
+            </div>
           </div>
 
           {/* Description */}
@@ -182,7 +179,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
                   (prev) => ({ ...prev, description: e.target.value } as Task)
                 )
               }
-              className="mt-1 p-2 bg-gray-700/50 rounded-lg whitespace-pre-wrap min-h-[100px] w-full resize-none"
+              className="mt-1 text-area"
             ></textarea>
           </div>
 
