@@ -49,7 +49,7 @@ export const FilterAndSortContext = createContext<FilterAndSortContextType>({
     name: 0 as -1 | 0 | 1,
     date: 0 as -1 | 0 | 1,
   },
-  setFilter: () => {},
+  setFilter: () => { },
 });
 export default function ProjectTable({ id }: { id: string }) {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -73,7 +73,7 @@ export default function ProjectTable({ id }: { id: string }) {
   return (
     <FilterAndSortContext.Provider value={{ filter, setFilter }}>
       <div className="flex flex-col gap-4 p-2 items-center size-full py-10 ">
-        
+
         <div className="max-w-[800px] w-full items-center flex flex-wrap p-2 gap-2 panel-1 z-2">
           <Search size={24} />
 
@@ -128,7 +128,7 @@ export default function ProjectTable({ id }: { id: string }) {
                   Create Project
                 </button>
               }
-              form={<ProjectForm />}
+              form={<ProjectForm onProjectCreated={(pj) => setProjects(prev => [pj, ...prev])} />}
             />
           </div>
         </div>
