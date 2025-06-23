@@ -1,28 +1,49 @@
 "use client";
 import Loader from "@/components/loader/Loader";
-import { toastWarning } from "@/components/toast/toaster";
+import { toastWarning, toastSuccess, toastError } from "@/components/toast/toaster";
 import React, { useState } from "react";
 
 export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     const formData = new FormData(event.currentTarget);
     const username = formData.get("username") as string;
     const fullname = formData.get("fullname") as string;
     const email = formData.get("email") as string;
-    const phone_number = formData.get("phone_number") as string;
+    const phoneNumber = formData.get("phone_number") as string;
     const password = formData.get("password") as string;
     const confirm_password = formData.get("confirm_password") as string;
 
     if (password.length < 8) {
       toastWarning("Password must be at least 8 letters long");
+      setIsLoading(false);
+      return;
     } else if (password !== confirm_password) {
       toastWarning("Password does not match");
+      setIsLoading(false);
+      return;
     }
 
-    setTimeout(() => setIsLoading(false), 500);
+    try {
+      const res = await fetch("/api/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, fullname, phoneNumber, username }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toastSuccess("Sign up successful! Please login.");
+        // Optionally redirect to login page
+        window.location.href = "/login";
+      } else {
+        toastWarning(data.message || "Sign up failed");
+      }
+    } catch (error) {
+      toastError("Sign up failed");
+    }
+    setIsLoading(false);
   };
   return (
     <div className="flex items-center justify-center h-screen  ">
@@ -71,7 +92,7 @@ export default function SignUp() {
                 type="tel"
                 maxLength={10}
                 id="phone_number"
-                name="phon_enumber"
+                name="phoneNumber"
                 className="input-box"
                 required
               />

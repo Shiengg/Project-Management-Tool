@@ -2,6 +2,9 @@ import { NextAuthOptions, Session, User } from "next-auth";
 import CredentialsProvider, {
   CredentialInput,
 } from "next-auth/providers/credentials";
+import { connectToDatabase } from '@/lib/mongodb';
+import UserModel from '@/models/User';
+import bcrypt from 'bcrypt';
 
 export const options: NextAuthOptions = {
   providers: [
@@ -17,44 +20,24 @@ export const options: NextAuthOptions = {
         }
         const { email, password } = credentials;
 
-        // const { statusCode, data } = await login({
-        //   email,
-        //   password
-        // });
-        const { statusCode, data } = {
-          statusCode: 200, // Simulating a successful response
-          data: {
-            id: "user_123456",
-            username: "bello_dev",
-            fullname: "Bello Developer",
-            email: "bello@example.com",
-            phoneNumber: "+1234567890",
-            image:
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/John_Doe%2C_born_John_Nommensen_Duchac.jpg/1200px-John_Doe%2C_born_John_Nommensen_Duchac.jpg",
-          },
-        };
-
-        if (statusCode) {
-          if (statusCode === 401) {
-            throw new Error("Invalid email or password.");
-          } else if (statusCode === 403) {
-            throw new Error("Your account is not authorized to log in.");
-          } else if (statusCode >= 500) {
-            throw new Error("Server error. Please try again later.");
-          } else if (!data) {
-            throw new Error("An unexpected error occurred. Please try again.");
-          }
-        } else {
-          throw new Error(
-            "Unable to connect to the server. Check your network connection."
-          );
+        await connectToDatabase();
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+          throw new Error("Invalid email or password.");
         }
-
-        if (data) {
-          return data
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          throw new Error("Invalid email or password.");
         }
-
-        return null;
+        // Trả về user, loại bỏ password và chuẩn hóa kiểu dữ liệu
+        const userObj = user.toObject();
+        Reflect.deleteProperty(userObj, 'password');
+        // Chuyển các trường null sang undefined để đúng kiểu User
+        if (userObj.username === null) userObj.username = undefined;
+        if (userObj.phoneNumber === null) userObj.phoneNumber = undefined;
+        if (userObj.image === null) userObj.image = undefined;
+        if (userObj.notification === null) userObj.notification = undefined;
+        return userObj as User;
       },
     }),
   ],
