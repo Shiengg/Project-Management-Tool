@@ -1,9 +1,9 @@
 import { theme } from "@/components/theme/ThemeManager";
-import { Task, TaskList, Project, User } from "@/lib/types";
+import { Task, TaskList, Project, User, Log } from "@/lib/types";
 
 const mockUsers = [
   {
-    id: `user_1`,
+    _id: `user_1`,
     username: `user1`,
     fullname: `User 1`,
     email: `user1@example.com`,
@@ -11,7 +11,7 @@ const mockUsers = [
     image: `https://i.pravatar.cc/150?img=1`,
   },
   {
-    id: `user_$2`,
+    _id: `user_$2`,
     username: `user$2`,
     fullname: `User $2`,
     email: `user$2@example.com`,
@@ -28,7 +28,7 @@ function getRandomDate(start: Date, end: Date): Date {
 
 function createMockUser(id: string): User {
   return {
-    id: `user_${id}`,
+    _id: `user_${id}`,
     username: `user${id}`,
     fullname: `User ${id}`,
     email: `user${id}@example.com`,
@@ -45,13 +45,13 @@ function createMockTask(id: string): Task {
   );
 
   return {
-    id: `task_${id}`,
+    _id: `task_${id}`,
     name: `Task ${id}`,
     theme: Math.random() > 0.5 ? "img-3" : "",
     description: `This is a mock task number ${id}`,
-    member: mockUsers.filter(() => Math.random() < 0.5).map((m) => m.id),
-
-    state: Math.random() > 0.5,
+    member: mockUsers.filter(() => Math.random() < 0.5).map((m) => m._id),
+    priority: Math.round(Math.random() * 5) as 1 | 2 | 3 | 4 | 5,
+    status: Math.random() > 0.5,
     createdAt,
     due,
   };
@@ -65,11 +65,27 @@ function createMockTaskList(id: string, taskCount = 3): TaskList {
   }
 
   return {
-    id: `list_${id}`,
+    _id: `list_${id}`,
     name: `List ${id}`,
     list: tasks,
     createdAt: getRandomDate(new Date(2023, 0, 1), new Date()),
   };
+}
+
+function createMockLogs(num = 10): Log[] {
+  const actions = ["joined", "left", "create", "update", "delete"];
+  const logs: Log[] = [];
+
+  for (let i = 0; i < num; i++) {
+    logs.push({
+      _id: `log_${i}_${Math.random().toString(36).substring(2, 10)}`,
+      email: `user${i}@example.com`,
+      action: actions[Math.floor(Math.random() * actions.length)],
+      createdAt: new Date(Date.now() - Math.floor(Math.random() * 1000000000)), // random past date
+    });
+  }
+
+  return logs;
 }
 
 function createMockProject(id: string, listCount = 2): Project {
@@ -78,8 +94,8 @@ function createMockProject(id: string, listCount = 2): Project {
     lists.push(createMockTaskList(id + i)); // ensures unique task IDs per list
   }
   return {
-    id,
-    admin: mockUsers[0].id,
+    _id: id,
+    admin: mockUsers[0]._id,
     name: "My New Project",
     description: "Mock Project Description",
     member: mockUsers,
@@ -93,6 +109,7 @@ function createMockProject(id: string, listCount = 2): Project {
           1
       )
     ],
+    log: createMockLogs(Math.round(Math.random() * 10)),
   };
 }
 

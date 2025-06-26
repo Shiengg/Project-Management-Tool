@@ -76,6 +76,7 @@ export default function TaskControl() {
           }
           menu={<FilterForm />}
         />
+ 
         <Form
           name={"Member board"}
           icon={
@@ -86,15 +87,15 @@ export default function TaskControl() {
           }
           form={<MemberBoard />}
         />
-        <Form
-          name={"Project Setting"}
+        <Menu
+          name={"Setting"}
           icon={
             <button className="button-2 gap-2">
               <Bolt size={18} />
               <span className="hidden sm:inline-block">Setting</span>
             </button>
           }
-          form={<ProjectSetting />}
+          menu={<ProjectSetting />}
         />
       </div>
     </div>
