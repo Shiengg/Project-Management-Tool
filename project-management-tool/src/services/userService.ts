@@ -1,15 +1,27 @@
 "use server";
-import { User } from "@/lib/types";
-import { createMockUser } from "./mock/mock";
+import { cookies } from "next/headers";
 
-export const searchUser = async (email: string): Promise<User[]> => {
-  const results: User[] = [];
+export const searchUser = async (keyword: string) => {
+  try {
+    const cookie = await cookies();
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_DOMAIN}/api/user?keyword=${keyword}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookie.toString(),
+        },
+      }
+    );
 
-  const count = Math.floor(Math.random() * 5) + 1; // random number between 1 and 5
-
-  for (let i = 0; i < count; i++) {
-    results.push(createMockUser(`${email}+${i}`));
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error);
+    return [];
   }
-
-  return results;
 };

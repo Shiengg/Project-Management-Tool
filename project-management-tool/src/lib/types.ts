@@ -2,7 +2,7 @@ import { DefaultUser } from "next-auth";
 
 declare module "next-auth" {
   interface User extends DefaultUser {
-    id?: string;
+    _id?: string;
     username?: string;
     fullname?: string;
     email?: string;
@@ -16,23 +16,24 @@ declare module "next-auth" {
 }
 
 export type User = {
-  id: string;
-  username?: string;
-  fullname?: string;
-  email?: string;
+  _id: string;
+  username: string;
+  fullname: string;
+  email: string;
   phoneNumber?: string;
-  image?: string;
+  image: string;
+  notification?: Notification[];
 };
 
 export type TaskList = {
-  id: string;
+  _id: string;
   name?: string;
   list: Task[];
   createdAt?: Date | string;
 };
 
 export type Project = {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   admin: string;
@@ -41,21 +42,30 @@ export type Project = {
   state: 0 | 1 | 2;
   createdAt: Date | string;
   theme: string;
+  log: Log[]
 };
 
+export type Log = {
+  _id:string;
+  email: string;
+  action: string;
+  createdAt: Date| string;
+}
+
 export type Task = {
-  id: string;
+  _id: string;
   name: string;
   theme: string;
   description: string;
   member: string[];
-  state: boolean;
+  status: boolean;
+  priority: 1 | 2 | 3 | 4 | 5;
   createdAt: Date | string;
   due: Date | string;
 };
 
-export type Notification = {
-  id: string;
+export type Invitation = {
+  _id: string;
   projectId: string;
   projectName: string;
   email: string;

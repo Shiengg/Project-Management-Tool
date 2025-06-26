@@ -19,6 +19,7 @@ export const formatDateOnly = (date: Date | string) => {
 };
 
 export const formatDateTimeLocal = (date: Date | string) => {
+  if(!date) return "";
   const d = new Date(date);
   const pad = (n: number) => String(n).padStart(2, "0");
 
