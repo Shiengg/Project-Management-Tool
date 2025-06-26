@@ -87,12 +87,12 @@ export default function SignUp() {
               />
             </div>
             <div className="flex flex-col base-1 grow">
-              <label htmlFor="phonenumber">Phone Number</label>
+              <label htmlFor="phone_number">Phone Number</label>
               <input
                 type="tel"
                 maxLength={10}
                 id="phone_number"
-                name="phoneNumber"
+                name="phone_number"
                 className="input-box"
                 required
               />

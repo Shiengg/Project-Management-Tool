@@ -12,8 +12,6 @@ function initializeSocket(server) {
     },
   });
   io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
-
     socket.on("disconnect", () => {
       for (const [userId, sId] of connectedUsers.entries()) {
         if (sId === socket.id) {
@@ -25,24 +23,17 @@ function initializeSocket(server) {
     });
 
     socket.on(NOTIFICATION_CHANNEL.JOIN, (id) => {
-      console.log("User connected:", socket.id);
+      console.log(id, " connected as:", socket.id);
       connectedUsers.set(id, socket.id);
-      io.to(socket.id).emit(PROJECT_CHANNEL.ADD_MEMBER, {
-        id: "id" + Math.random() * 123,
-        projectId: "123",
-        projectName: "TEST",
-        email: "test@gmail.com",
-        createdAt: new Date(),
-      });
     });
 
     socket.on(PROJECT_CHANNEL.JOIN_ROOM, (projectId) => {
-      console.log(`User joined project:${projectId}`);
+      console.log(`${socket.id} joined room:${projectId}`);
       socket.join(projectId);
     });
 
     socket.on(PROJECT_CHANNEL.LEAVE_ROOM, (projectId) => {
-      console.log(`User left project:${projectId}`);
+      console.log(`${socket.id} left room:${projectId}`);
 
       socket.leave(projectId);
     });
@@ -52,24 +43,31 @@ function initializeSocket(server) {
         `Assigning ${adminId} to be the new admin of project ${projectId}`
       );
 
-      io.to(projectId).emit(PROJECT_CHANNEL.ASSIGN_ADMIN, adminId);
+      socket.to(projectId).emit(PROJECT_CHANNEL.ASSIGN_ADMIN, adminId);
     });
 
     socket.on(
+      PROJECT_CHANNEL.UPDATE_PROJECT_INFO,
+      ({ projectId, name, description, state, theme }) => {
+        socket.to(projectId).emit(PROJECT_CHANNEL.UPDATE_PROJECT_INFO, {
+          name,
+          description,
+          state,
+          theme,
+        });
+      }
+    );
+
+    socket.on(
       PROJECT_CHANNEL.ADD_MEMBER,
-      ({ projectId, projectName, userIds, email, createdAt, id }) => {
-        userIds.forEach((userId) => {
-          console.log(
-            `Inviting ${userId?.toString()} to project: ${projectId}`
-          );
-          console.log(connectedUsers.get(userId))
-          io.to(connectedUsers.get(userId)).emit(PROJECT_CHANNEL.ADD_MEMBER, {
-            id,
-            projectId,
-            projectName,
-            email,
-            createdAt,
-          });
+      ({ projectId, projectName, userId, email, createdAt, _id }) => {
+        console.log(`Inviting ${userId?.toString()} to project: ${projectId}`);
+        io.to(connectedUsers.get(userId)).emit(PROJECT_CHANNEL.ADD_MEMBER, {
+          _id,
+          projectId,
+          projectName,
+          email,
+          createdAt,
         });
       }
     );
@@ -82,8 +80,13 @@ function initializeSocket(server) {
       socket.to(projectId).emit(PROJECT_CHANNEL.LEAVE_PROJECT, userId);
     });
 
-    socket.on(PROJECT_CHANNEL.ADD_TASK, ({ projectId, newTask }) => {
-      socket.to(projectId).emit(PROJECT_CHANNEL.ADD_TASK, newTask);
+    socket.on(PROJECT_CHANNEL.DELETE_PROJECT, ({ projectId }) => {
+      console.log(`Deleting ${projectId}`);
+      socket.to(projectId).emit(PROJECT_CHANNEL.DELETE_PROJECT);
+    });
+
+    socket.on(PROJECT_CHANNEL.ADD_TASK, ({ projectId, listId, newTask }) => {
+      socket.to(projectId).emit(PROJECT_CHANNEL.ADD_TASK, { listId, newTask });
     });
 
     socket.on(PROJECT_CHANNEL.UPDATE_TASK, ({ projectId, updateTask }) => {
@@ -107,8 +110,8 @@ function initializeSocket(server) {
       socket.to(projectId).emit(PROJECT_CHANNEL.ADD_LIST, newList);
     });
 
-    socket.on(PROJECT_CHANNEL.UPDATE_LIST, ({ projectId, updateTask }) => {
-      socket.to(projectId).emit(PROJECT_CHANNEL.UPDATE_LIST, updateTask);
+    socket.on(PROJECT_CHANNEL.UPDATE_LIST, ({ projectId, listId, name }) => {
+      socket.to(projectId).emit(PROJECT_CHANNEL.UPDATE_LIST, { listId, name });
     });
 
     socket.on(PROJECT_CHANNEL.MOVE_LIST, ({ projectId, fromId, toId }) => {
@@ -117,6 +120,10 @@ function initializeSocket(server) {
 
     socket.on(PROJECT_CHANNEL.DELETE_LIST, ({ projectId, listId }) => {
       socket.to(projectId).emit(PROJECT_CHANNEL.DELETE_LIST, listId);
+    });
+
+    socket.on(PROJECT_CHANNEL.LOG, ({ projectId, log }) => {
+      socket.to(projectId).emit(PROJECT_CHANNEL.LOG, log);
     });
   });
 }

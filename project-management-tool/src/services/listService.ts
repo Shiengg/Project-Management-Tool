@@ -2,15 +2,11 @@
 
 import { cookies } from "next/headers";
 
-export const createTask = async (
-  projectId: string,
-  listId: string,
-  name: string
-) => {
+export const createList = async (projectId: string, name: string) => {
   try {
     const cookie = await cookies();
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_DOMAIN}/api/project/${projectId}/tasklist/${listId}`,
+      `${process.env.NEXT_PUBLIC_DOMAIN}/api/project/${projectId}/tasklist`,
       {
         method: "POST",
         headers: {
@@ -32,11 +28,11 @@ export const createTask = async (
     return null;
   }
 };
-export const deleteTask = async (projectId: string, taskId: string) => {
+export const deleteList = async (projectId: string, taskListId: string) => {
   try {
     const cookie = await cookies();
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_DOMAIN}/api/project/${projectId}/task/${taskId}`,
+      `${process.env.NEXT_PUBLIC_DOMAIN}/api/project/${projectId}/tasklist/${taskListId}`,
       {
         method: "DELETE",
         headers: {
@@ -58,22 +54,22 @@ export const deleteTask = async (projectId: string, taskId: string) => {
   }
 };
 
-export const updateTask = async (
+export const updateList = async (
   projectId: string,
-  taskId: string,
-  updates: any
+  taskListId: string,
+  name: string
 ) => {
   try {
     const cookie = await cookies();
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_DOMAIN}/api/project/${projectId}/task/${taskId}`,
+      `${process.env.NEXT_PUBLIC_DOMAIN}/api/project/${projectId}/tasklist/${taskListId}`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Cookie: cookie.toString(),
         },
-        body: JSON.stringify(updates),
+        body: JSON.stringify(name),
       }
     );
     if (res.ok) {
@@ -88,23 +84,18 @@ export const updateTask = async (
   }
 };
 
-export const moveTask = async (
-  projectId: string,
-  from: string,
-  list: string,
-  to: string | null
-) => {
+export const moveList = async (projectId: string, from: string, to: string) => {
   try {
     const cookie = await cookies();
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_DOMAIN}/api/project/${projectId}/task/`,
+      `${process.env.NEXT_PUBLIC_DOMAIN}/api/project/${projectId}/tasklist/`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Cookie: cookie.toString(),
         },
-        body: JSON.stringify({ from, to, list }),
+        body: JSON.stringify({ from, to }),
       }
     );
     if (res.ok) {

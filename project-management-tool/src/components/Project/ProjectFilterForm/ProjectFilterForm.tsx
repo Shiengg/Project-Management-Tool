@@ -2,13 +2,22 @@ import React, { useContext } from "react";
 import { FilterAndSortContext } from "../ProjectTable/ProjectTable";
 import { Project } from "@/lib/types";
 
+export type ProjectFilterType = {
+  keyword: string;
+  state: number[];
+  name: -1 | 0 | 1;
+  date: -1 | 0 | 1;
+};
+
+
+export const defaultFilter:ProjectFilterType = {
+  keyword: "",
+  state: [],
+  name: 0 as -1 | 0 | 1,
+  date: 0 as -1 | 0 | 1,
+};
 export const filterProject = (
-  filter: {
-    keyword: string;
-    state: number[];
-    name: -1 | 0 | 1;
-    date: -1 | 0 | 1;
-  },
+  filter: ProjectFilterType,
   projects: Project[]
 ) => {
   return projects?.filter((pr) => {

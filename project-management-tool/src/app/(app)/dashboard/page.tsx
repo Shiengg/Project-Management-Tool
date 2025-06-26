@@ -7,7 +7,7 @@ export default async function Dashboard() {
   const session = await getServerSession(options);
   return (
     <div className="size-full">
-      <ProjectTable id={session?.user.id || ""} />
+      <ProjectTable id={session?.user._id || ""} />
     </div>
   );
 }

@@ -32,11 +32,11 @@ export const options: NextAuthOptions = {
         // Trả về user, loại bỏ password và chuẩn hóa kiểu dữ liệu
         const userObj = user.toObject();
         Reflect.deleteProperty(userObj, 'password');
+        Reflect.deleteProperty(userObj, 'notification');
         // Chuyển các trường null sang undefined để đúng kiểu User
-        if (userObj.username === null) userObj.username = undefined;
-        if (userObj.phoneNumber === null) userObj.phoneNumber = undefined;
-        if (userObj.image === null) userObj.image = undefined;
-        if (userObj.notification === null) userObj.notification = undefined;
+        // if (userObj.username === null) userObj.username = undefined;
+        // if (userObj.phoneNumber === null) userObj.phoneNumber = undefined;
+        // if (userObj.image === null) userObj.image = undefined;
         return userObj as User;
       },
     }),

@@ -1,54 +1,33 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Project } from '@/lib/types';
-import { createMockProject } from '@/services/mock/mock';
-import { toastSuccess } from '@/components/toast/toaster';
+import React, { useState } from "react";
+import { Project } from "@/lib/types";
+import { createMockProject } from "@/services/mock/mock";
+import { toastSuccess } from "@/components/toast/toaster";
+import { useSession } from "next-auth/react";
+import { theme } from "@/components/theme/ThemeManager";
+import { createProject } from "@/services/projectService";
+import Loader from "@/components/loader/Loader";
 
-type ProjectFormProps = {
-  onProjectCreated?: (project: Project) => void;
-};
+export default function ProjectForm({ onCreate }: { onCreate: any }) {
+  const { data: session } = useSession();
+  const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [description, setDescription] = useState("");
+  const [projectTheme, setProjectTheme] = useState("1");
 
-export default function ProjectForm({ onProjectCreated }: ProjectFormProps) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [theme, setTheme] = useState('default');
-  const [state, setState] = useState<0 | 1 | 2>(0);
-
-  // Simulate current user; in a real app you'd use `useSession()` to get this.
-  const mockAdminId = 'admin123';
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return alert('Project name is required.');
-
-    let project = createMockProject(name); // id = name in mock by default
-
-    // Manually set other fields based on form input
-    project = {
-      ...project,
-      name,
-      description,
-      theme,
-      state,
-      admin: mockAdminId,
-      createdAt: new Date(),
-    };
-
-    toastSuccess(`Project "${name}" created successfully!`);
-    onProjectCreated?.(project); // update parent
-    setName('');
-    setDescription('');
-    setTheme('default');
-    setState(0);
+    setIsLoading(true);
+    await onCreate(name, description, projectTheme);
+    setTimeout(() => setIsLoading(false), 1000);
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full flex flex-col gap-4 bg-gray-900 p-6 rounded-lg"
+      className="w-full flex flex-col gap-4 bg-gray-900 p-2 rounded-lg"
     >
-      <h2 className="text-xl font-bold text-white">Create New Project</h2>
 
       <div className="flex flex-col gap-1">
         <label className="text-gray-300">Name</label>
@@ -74,35 +53,40 @@ export default function ProjectForm({ onProjectCreated }: ProjectFormProps) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-gray-300">Theme</label>
-        <select
-          value={theme}
-          onChange={(e) => setTheme(e.target.value)}
-          className="input-box"
-        >
-          <option value="default">Default</option>
-          <option value="blue">Ocean Blue</option>
-          <option value="green">Forest Green</option>
-          <option value="orange">Sunset Orange</option>
-          <option value="dark">Dark</option>
-        </select>
+        <label className="text-gray-300 flex flex-row gap-2 items-center">
+          Project Theme{" "}
+          <div
+            className={`aspect-[2/1] w-9 rounded background-base background-${projectTheme}`}
+          ></div>
+        </label>
+
+        <ul className="flex flex-col gap-2 p-1 panel-1 ">
+          {theme.map((category) => (
+            <div key={category.name} className="pb-4">
+              <h2 className=" font-semibold mb-2">{category.name}</h2>
+              <div className="flex flex-wrap gap-3">
+                {category.background.map((bg) => (
+                  <button
+                    type="button"
+                    onClick={() => setProjectTheme(bg)}
+                    key={bg}
+                    className={`rounded-lg aspect-[2/1] max-w-[50px] grow min-w-[50px]  shadow-md background-base  background-${bg} cursor-pointer ${
+                      projectTheme === bg ? "outline-2 outline-gray-500" : ""
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </ul>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-gray-300">State</label>
-        <select
-          value={state}
-          onChange={(e) => setState(parseInt(e.target.value) as 0 | 1 | 2)}
-          className="input-box"
-        >
-          <option value={0}>Not Started</option>
-          <option value={1}>In Progress</option>
-          <option value={2}>Completed</option>
-        </select>
-      </div>
-
-      <button type="submit" className="button-3 self-start">
-        Create Project
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="button-3 self-start w-full"
+      >
+        {isLoading ? <Loader /> : "Create Project"}
       </button>
     </form>
   );

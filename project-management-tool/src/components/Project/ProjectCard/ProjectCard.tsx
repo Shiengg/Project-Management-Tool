@@ -11,7 +11,7 @@ export default function ProjectCard({ project }: { project: Project }) {
   };
   return (
     <Link
-      href={`/project/${project.id}`}
+      href={`/project/${project._id}`}
       className={`project-card hover:opacity-90 `}
     >
       <div

@@ -9,60 +9,34 @@ import React, {
   useState,
 } from "react";
 import ProjectFilterForm, {
+  defaultFilter,
   filterProject,
+  ProjectFilterType,
 } from "../ProjectFilterForm/ProjectFilterForm";
 import ProjectForm from "../ProjectForm/ProjectForm";
 import Menu from "@/components/UI/Menu";
 import { Project } from "@/lib/types";
 import Loader from "@/components/loader/Loader";
 import ProjectCard from "../ProjectCard/ProjectCard";
-import { getProjects } from "@/services/projectService";
-
-const defaultFilter = {
-  keyword: "",
-  state: [],
-  name: 0 as -1 | 0 | 1,
-  date: 0 as -1 | 0 | 1,
-};
+import { createProject, getProjects } from "@/services/projectService";
+import { toastError, toastSuccess } from "@/components/toast/toaster";
 
 type FilterAndSortContextType = {
-  filter: {
-    keyword: string;
-    state: number[];
-    name: -1 | 0 | 1;
-    date: -1 | 0 | 1;
-  };
-  setFilter: Dispatch<
-    SetStateAction<{
-      keyword: string;
-      state: number[];
-      name: -1 | 0 | 1;
-      date: -1 | 0 | 1;
-    }>
-  >;
+  filter: ProjectFilterType;
+  setFilter: Dispatch<SetStateAction<ProjectFilterType>>;
 };
 
 export const FilterAndSortContext = createContext<FilterAndSortContextType>({
-  filter: {
-    keyword: "",
-    state: [],
-    name: 0 as -1 | 0 | 1,
-    date: 0 as -1 | 0 | 1,
-  },
-  setFilter: () => { },
+  filter: defaultFilter,
+  setFilter: () => {},
 });
 export default function ProjectTable({ id }: { id: string }) {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [filter, setFilter] = useState<{
-    keyword: string;
-    state: number[];
-    name: -1 | 0 | 1;
-    date: -1 | 0 | 1;
-  }>(defaultFilter);
+  const [filter, setFilter] = useState<ProjectFilterType>(defaultFilter);
   const [isLoading, setIsLoading] = useState(false);
   const fetchProjects = async () => {
     setIsLoading(true);
-    getProjects(id).then((res) => {
+    getProjects().then((res) => {
       setProjects(res), setTimeout(() => setIsLoading(false), 500);
     });
   };
@@ -70,10 +44,24 @@ export default function ProjectTable({ id }: { id: string }) {
     fetchProjects();
   }, [id]);
 
+  const AddProject = async (
+    name: string,
+    description: string,
+    projectTheme: string
+  ) => {
+    createProject(name, description, projectTheme).then((res) => {
+      if (res) {
+        toastSuccess("Project created");
+        setProjects((prev) => [res, ...prev] as Project[]);
+      } else {
+        toastError("Failed to create project");
+      }
+    });
+  };
+
   return (
     <FilterAndSortContext.Provider value={{ filter, setFilter }}>
       <div className="flex flex-col gap-4 p-2 items-center size-full py-10 ">
-
         <div className="max-w-[800px] w-full items-center flex flex-wrap p-2 gap-2 panel-1 z-2">
           <Search size={24} />
 
@@ -128,7 +116,7 @@ export default function ProjectTable({ id }: { id: string }) {
                   Create Project
                 </button>
               }
-              form={<ProjectForm onProjectCreated={(pj) => setProjects(prev => [pj, ...prev])} />}
+              form={<ProjectForm onCreate={AddProject} />}
             />
           </div>
         </div>
@@ -139,7 +127,7 @@ export default function ProjectTable({ id }: { id: string }) {
           ) : (
             <>
               {filterProject(filter, projects)?.map((pj) => (
-                <ProjectCard key={pj.id} project={pj} />
+                <ProjectCard key={pj._id} project={pj} />
               ))}
             </>
           )}

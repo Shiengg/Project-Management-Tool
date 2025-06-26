@@ -4,13 +4,19 @@ import { Task, TaskList } from "@/lib/types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import TaskCard from "../TaskCard/TaskCard";
 import { Ellipsis, Plus, X } from "lucide-react";
-import { FilterContext, ViewContext } from "../TaskTable/TaskTable";
+import {
+  FilterContext,
+  ProjectContext,
+  ViewContext,
+} from "../TaskTable/TaskTable";
 import { getColorFromPercentage } from "@/lib/render";
 import Menu from "../../UI/Menu";
 import ActionList from "./ActionList";
 import { toastRequest, toastSuccess } from "@/components/toast/toaster";
 import { filterTask } from "../TaskTable/TaskControl/FilterForm";
 import { DNDContext } from "../TaskTable/TaskBoard/TaskBoard";
+import Loader from "@/components/loader/Loader";
+import { useSession } from "next-auth/react";
 
 export default function TaskListComponent({ list }: { list: TaskList }) {
   const {
@@ -26,35 +32,31 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
     handleMoveTask,
   } = useContext(DNDContext);
   const { filter: projectFilter } = useContext(FilterContext);
+  const { project } = useContext(ProjectContext);
   const { view } = useContext(ViewContext);
-  const [sort, setSort] = useState<0 | 1 | 2 | 3 | 4>(0);
-  const [filter, setFilter] = useState<{
-    myTask: boolean;
-    completed: boolean;
-    uncompleted: boolean;
-  }>({
-    myTask: false,
-    completed: projectFilter.completed,
-    uncompleted: projectFilter.uncompleted,
-  });
+  const { data: session } = useSession();
+
+  const isAdmin = session?.user._id === project?.admin;
+
+  const [sort, setSort] = useState<0 | 1 | 2 | 3 | 4 | 5 | 6>(0);
   const [isExpand, setIsExpand] = useState(false);
   const [tasks, setTasks] = useState(list.list);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const completion =
     tasks.length > 0
-      ? (tasks.reduce((acc, t) => acc + (t.state ? 1 : 0), 0) / tasks.length) *
+      ? (tasks.reduce((acc, t) => acc + (t.status ? 1 : 0), 0) / tasks.length) *
         100
       : 0;
 
   const handleDelete = async () => {
     const result = await toastRequest("Do you want to remove this list?");
     if (result) {
-      handleDeleteList(list.id);
-      toastSuccess("Task list removed");
+      handleDeleteList(list._id);
     }
   };
 
@@ -64,10 +66,16 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
     );
     if (result) {
       [...tasks].forEach((t) => {
-        handleMoveTask(t.id, id, null);
+        handleMoveTask(t._id, id, null);
       });
       toastSuccess("Tasks moved");
     }
+  };
+
+  const handleAddNewTask = async () => {
+    setIsLoading(true);
+    await handleAddTask(list._id, inputRef.current?.value || "");
+    setTimeout(() => setIsLoading(false), 1000);
   };
 
   useEffect(() => setIsExpand(view), [view]);
@@ -77,18 +85,20 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
 
   return (
     <div
-      draggable={dragType !== "task"} // avoid conflicting drags
+      draggable={dragType !== "task" && isAdmin} // avoid conflicting drags
       onDragStart={(e) => {
         // only trigger if we're dragging a list
-        if (dragType !== "task") handleDragStart(list.id, "list");
+        if (dragType !== "task") handleDragStart(list._id, "list");
       }}
       onDragOver={(e) => {
         e.preventDefault();
-        handleDragOver(list.id, "list");
+        handleDragOver(list._id, "list");
       }}
-      className={`task-list-container overflow-visible  ${draggingId === list.id ? "opacity-50" : ""} `}
+      className={`task-list-container overflow-visible  ${
+        draggingId === list._id ? "opacity-50" : ""
+      } `}
       style={{
-        outline: hoverListId === list.id ? "2px solid  blue" : "none",
+        outline: hoverListId === list._id ? "2px solid  blue" : "none",
       }}
     >
       <div
@@ -104,6 +114,7 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
       <div className={`flex ${isExpand ? "flex-row" : "flex-col"} gap-2 `}>
         <input
           ref={nameRef}
+          readOnly={!isAdmin}
           defaultValue={list.name}
           type="text"
           className={`input-box grow text-sm font-semibold ${
@@ -116,7 +127,7 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
                 nameRef.current.value = list.name || "";
               }
             } else {
-              handleUpdateList(list.id, value);
+              handleUpdateList(list._id, value);
             }
           }}
         />
@@ -130,13 +141,11 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
           }
           menu={
             <ActionList
-              id={list.id}
+              id={list._id}
               sort={sort}
               setSort={setSort}
-              filter={filter}
               expand={isExpand}
               toggleExpand={setIsExpand}
-              setFilter={setFilter}
               toggleAdd={setIsAdding}
               onDelete={handleDelete}
               handleMoveAllTaskTo={handleMoveAllTaskTo}
@@ -149,16 +158,6 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
         <>
           <ul className="task-list">
             {filterTask(projectFilter, tasks)
-              ?.filter((t) => {
-                const isMine = !filter.myTask || false; // If not filtering by mine, accept all
-                const isCompletedMatch = filter.completed
-                  ? t.state === true
-                  : filter.uncompleted
-                  ? t.state === false
-                  : true;
-
-                return isMine && isCompletedMatch;
-              })
               .sort((a, b) => {
                 switch (sort) {
                   case 1: // Latest (newest first)
@@ -174,22 +173,34 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
                   case 3: // Name (alphabetical)
                     return a.name.localeCompare(b.name);
                   case 4: // Due date
+                    // both null → equal
+                    if (a.due == null && b.due == null) return 0;
+                    // a has no due → put it after b
+                    if (a.due == null) return 1;
+                    // b has no due → put a before b
+                    if (b.due == null) return -1;
+                    // both have dates → compare normally
                     return (
                       new Date(a.due).getTime() - new Date(b.due).getTime()
                     );
+                  case 5: // Low Priority
+                    return a.priority - b.priority;
+                  case 6: // High Priority
+                    return b.priority - a.priority;
                   default: // No sort
                     return 0;
                 }
               })
               .map((task) => (
-                <TaskCard key={task.id} task={task} />
+                <TaskCard key={task._id} task={task} />
               ))}
           </ul>
 
-          {isAdding ? (
+          {!isAdmin ? null : isAdding ? (
             <div className="flex flex-col gap-2 p-1">
               <input
                 ref={inputRef}
+                readOnly={isLoading}
                 type="text"
                 placeholder="Task name"
                 className="input-box text-sm"
@@ -199,17 +210,25 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
                 }}
               />
               <div className="text-sm flex flex-row gap-1">
-                <button
-                  className="button-3"
-                  onClick={() =>
-                    handleAddTask(list.id, inputRef.current?.value || "")
-                  }
-                >
-                  Add task
-                </button>
-                <button className="button-2" onClick={() => setIsAdding(false)}>
-                  <X size={14} />
-                </button>
+                {isLoading ? (
+                  <Loader />
+                ) : (
+                  <>
+                    <button
+                      disabled={isLoading}
+                      className="button-3"
+                      onClick={handleAddNewTask}
+                    >
+                      Add task
+                    </button>
+                    <button
+                      className="button-2"
+                      onClick={() => setIsAdding(false)}
+                    >
+                      <X size={14} />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           ) : (
