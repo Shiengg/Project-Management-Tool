@@ -31,7 +31,7 @@ export default function Nav({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        <div className="flex-1 pt-16">
+        <div className="flex-1">
           {children}
         </div>
       </div>
