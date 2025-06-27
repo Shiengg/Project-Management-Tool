@@ -59,7 +59,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 ">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 text-white ">
       <div className="bg-gray-800 rounded-lg max-w-2xl w-full h-fit max-h-screen ">
         {/* control */}
         <div className="relative ">
@@ -101,7 +101,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
                           <h2 className=" font-semibold mb-2">
                             {category.name}
                           </h2>
-                          <div className="flex flex-wrap gap-3">
+                          <div className="grid grid-cols-3 gap-1">
                             {category.background.map((bg) => (
                               <button
                                 onClick={() =>
@@ -110,7 +110,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
                                   )
                                 }
                                 key={bg}
-                                className={`rounded-xl aspect-[2/1] max-w-[70px] grow min-w-[70px]  shadow-md background-base  background-${bg}  ${
+                                className={`rounded aspect-[2/1]  w-full  shadow-md background-base  background-${bg}  ${
                                   task?.theme === bg
                                     ? "outline-2 outline-gray-500"
                                     : ""
@@ -136,7 +136,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
           <div className="flex flex-row gap-2 items-center">
             <input
               type="checkbox"
-              disabled={!isMyTask && !isAdmin}
+              disabled={(!isMyTask || project?.state !== 0) && !isAdmin}
               checked={task.status}
               onChange={(e) => {
                 handleUpdateTask({ _id: task._id, status: e.target.checked });
@@ -274,27 +274,24 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
                           };
                         })
                       }
-                      className={`flex flex-row gap-1 items-center p-1 px-2 rounded  ${
+                      className={`flex flex-row gap-2 items-center p-1 px-2 rounded  ${
                         task.member.includes(mb._id)
                           ? "bg-gray-600"
                           : "bg-gray-700/50"
                       } cursor-pointer`}
                     >
-                      <ProfileIcon src={mb.image || ""} size={24} />
+                      <ProfileIcon src={mb} size={20} />
                       <span className="text-xs ">{mb.email}</span>
                     </div>
                   ))
                 : task.member?.map((memberId) => (
                     <div
                       key={memberId}
-                      className="flex flex-row gap-1 items-center p-1 px-2 rounded bg-gray-700/50"
+                      className="flex flex-row gap-2 items-center p-1 px-2 rounded bg-gray-700/50"
                     >
                       <ProfileIcon
-                        src={
-                          project?.member.find((mb) => mb._id === memberId)
-                            ?.image || ""
-                        }
-                        size={24}
+                        src={project?.member.find((mb) => mb._id === memberId)}
+                        size={20}
                       />
                       <span className="text-xs ">
                         {

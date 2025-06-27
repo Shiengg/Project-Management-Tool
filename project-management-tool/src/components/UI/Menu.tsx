@@ -31,31 +31,38 @@ export default function Menu({
     const rect = menuEl.getBoundingClientRect();
 
     const overflowLeft = rect.left < 0;
-    const overflowRight = rect.right > window.innerWidth;
+
     const overflowBottom = rect.bottom > window.innerHeight;
 
-    if (overflowLeft || overflowRight || overflowBottom) {
+    if (overflowLeft && overflowBottom) {
       menuEl.style.position = "fixed";
     }
 
     if (overflowBottom) {
-      menuEl.style.bottom = "0";
+      menuEl.style.bottom = "5px";
       menuEl.style.top = "auto";
       menuEl.style.right = "auto";
-      menuEl.style.left = "0";
-    } 
+      menuEl.style.left = "5px";
+    }
     if (overflowLeft) {
-      menuEl.style.left = "0";
+      menuEl.style.left = "5px";
       menuEl.style.right = "auto";
-    } else if (overflowRight) {
-      menuEl.style.right = "0";
-      menuEl.style.left = "auto";
+
+      const newRect = menuEl.getBoundingClientRect();
+      if (newRect.right > window.innerWidth) {
+        menuEl.style.position = "fixed";
+
+        menuEl.style.top = "auto";
+        menuEl.style.bottom = "5px";
+      }
     }
   }, [open]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      const path = e.composedPath?.() || [];
+
+      if (ref.current && !path.includes(ref.current)) {
         setOpen(false);
       }
     };
@@ -63,12 +70,13 @@ export default function Menu({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
   return (
     <div className="relative" ref={ref}>
       {open && (
         <div
           ref={menuRef}
-          className="absolute top-[100%] right-0  overflow-hidden  z-50 shadow-md rounded-lg  outline-1 outline-gray-500/50  flex flex-col min-w-[250px] text-gray-400"
+          className=" text-gray-400 absolute top-[100%] right-0  overflow-hidden max-h-[85vh] h-fit  z-50 shadow-md rounded-lg  outline-1 outline-gray-500/50  flex flex-col min-w-[250px] "
           style={{
             backgroundColor: `rgba(39, 39, 39, 1)`,
           }}
@@ -83,7 +91,7 @@ export default function Menu({
               <X size={14} />
             </button>
           </div>
-          <div className="max-h-[85vh] overflow-x-auto">{menu}</div>
+          <div className=" overflow-x-auto">{menu}</div>
         </div>
       )}
 

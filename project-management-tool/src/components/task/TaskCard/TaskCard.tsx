@@ -61,7 +61,6 @@ export default function TaskCard({ task }: { task: Task }) {
   const [state, setState] = useState(task.status);
   const { setOpenTaskId } = useContext(TaskDetailContext);
 
-
   useEffect(() => {
     setState(task.status);
   }, [task.status]);
@@ -84,13 +83,14 @@ export default function TaskCard({ task }: { task: Task }) {
 
         handleDragOver(task._id, "task");
       }}
-      className={`task-card cursor-pointer ${
-        draggingId === task._id ? "opacity-50" : ""
-      } ${
+      className={`task-card   ${draggingId === task._id ? "opacity-50" : ""} ${
         hoverTaskId === task._id
           ? "outline-2 outline-blue-500"
           : "hover:outline-2 outline-white"
       }`}
+      style={{
+        cursor: draggingId ? "grabbing" : isAdmin ? "grab" : "default",
+      }}
     >
       {task.theme && (
         <div
@@ -117,7 +117,7 @@ export default function TaskCard({ task }: { task: Task }) {
         <input
           type="checkbox"
           checked={state}
-          disabled={!isMyTask && !isAdmin}
+          disabled={(!isMyTask || project?.state !== 0) && !isAdmin}
           onClick={(e) => {
             e.stopPropagation();
           }}
@@ -136,11 +136,11 @@ export default function TaskCard({ task }: { task: Task }) {
         </span>
       </div>
 
-      <div className="flex flex-wrap gap-1 p-1">
+      <div className="flex flex-wrap gap-2 px-2 py-2">
         {task.member?.map((id) => (
           <ProfileIcon
             key={id}
-            src={project?.member.find((mb) => mb._id === id)?.image || ""}
+            src={project?.member.find((mb) => mb._id === id)}
             size={16}
           />
         ))}

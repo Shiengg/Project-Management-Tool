@@ -211,23 +211,19 @@ export default function TaskTable({ initProject }: { initProject: Project }) {
   const handleDeleteProject = async () => {
     if (!session?.user._id) return;
 
-    const result = await toastRequest("Do you want to delete this project?");
-
-    if (result) {
-      deleteProject(initProject._id).then((res) => {
-        if (res) {
-          toastSuccess("Project deleted");
-          if (socket) {
-            socket.emit(PROJECT_CHANNEL.DELETE_PROJECT, {
-              projectId: initProject._id,
-            });
-          }
-          window.location.href = "/dashboard";
-        } else {
-          toastError("Failed to delete project");
+    deleteProject(initProject._id).then((res) => {
+      if (res) {
+        toastSuccess("Project deleted");
+        if (socket) {
+          socket.emit(PROJECT_CHANNEL.DELETE_PROJECT, {
+            projectId: initProject._id,
+          });
         }
-      });
-    }
+        window.location.href = "/dashboard";
+      } else {
+        toastError("Failed to delete project");
+      }
+    });
   };
 
   const handleLeaveProject = async () => {
@@ -238,28 +234,24 @@ export default function TaskTable({ initProject }: { initProject: Project }) {
       return;
     }
 
-    const result = await toastRequest("Leave project?");
-
-    if (result) {
-      RemoveMember(initProject._id, session.user._id).then((res) => {
-        if (res) {
-          window.location.href = "/dashboard";
-          if (socket) {
-            const payload = {
-              projectId: initProject._id,
-              userId: session.user._id,
-            };
-            socket.emit(PROJECT_CHANNEL.LEAVE_PROJECT, payload);
-            socket.emit(PROJECT_CHANNEL.LOG, {
-              projectId: initProject._id,
-              log: res.log,
-            });
-          }
-        } else {
-          toastError("Failed to leave");
+    RemoveMember(initProject._id, session.user._id).then((res) => {
+      if (res) {
+        window.location.href = "/dashboard";
+        if (socket) {
+          const payload = {
+            projectId: initProject._id,
+            userId: session.user._id,
+          };
+          socket.emit(PROJECT_CHANNEL.LEAVE_PROJECT, payload);
+          socket.emit(PROJECT_CHANNEL.LOG, {
+            projectId: initProject._id,
+            log: res.log,
+          });
         }
-      });
-    }
+      } else {
+        toastError("Failed to leave");
+      }
+    });
   };
 
   const handleAddMember = async (ids: string[]) => {

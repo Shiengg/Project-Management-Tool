@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { ProjectContext } from "../../TaskTable";
 import ProfileIcon from "@/components/UI/ProfileIcon";
 import { Project } from "@/lib/types";
@@ -13,10 +13,13 @@ import {
   toastWarning,
 } from "@/components/toast/toaster";
 import Loader from "@/components/loader/Loader";
+import { useSession } from "next-auth/react";
 
 export default function EditProject() {
+  const { data: session } = useSession();
   const { project: systemContext, handleUpdateProjectInfo } =
     useContext(ProjectContext);
+  const isAdmin = systemContext?.admin === session?.user._id;
   const [project, setProject] = useState<Project | null>(systemContext);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,45 +31,45 @@ export default function EditProject() {
     }
   }, [systemContext]);
 
-  const handleUpdateProject = async () => {
-    if (!project?.name) {
-      toastWarning("Please add a name for your project");
-      return;
+  const handleUpdateProject = async (event: FormEvent) => {
+    event.preventDefault();
+    if (project) {
+      setIsLoading(true);
+      await handleUpdateProjectInfo(project);
+      setTimeout(() => setIsLoading(false), 1000);
     }
-    if (!project?.description) {
-      toastWarning("Please add description for your project");
-      return;
-    }
-
-    setIsLoading(true);
-    await handleUpdateProjectInfo(project);
-    setTimeout(() => setIsLoading(false), 1000);
   };
 
   return (
-    <div className="[&div_label]:text-gray-400 flex flex-col gap-4 overflow-auto p-2">
-      <div className="grid grid-cols-[auto_1fr]   gap-2 items-center">
-        <WholeWord />
+    <form
+      onSubmit={handleUpdateProject}
+      className="[&div_label]:text-gray-400 flex flex-col gap-4 overflow-auto p-2 [&_label]:group-hover:text-blue-500 [&_label]:font-semibold [&_*]:transition-all duration-200 ease-in-out"
+    >
+      <div className="grid grid-cols-[auto_1fr]   gap-2 items-center group">
+        <WholeWord className="group-hover:text-blue-400" />
 
         <label>Project Name</label>
         <div></div>
         <input
           type="text"
           value={project?.name}
+          readOnly={!isAdmin}
           onChange={(e) =>
             setProject((prev) => ({ ...prev, name: e.target.value } as Project))
           }
+          required
           className="text-xl input-box w-full"
         />
       </div>
 
-      <div className="grid grid-cols-[auto_1fr]   gap-2 items-center">
-        <ListCollapse />
+      <div className="grid grid-cols-[auto_1fr]   gap-2 items-center group">
+        <ListCollapse className="group-hover:text-blue-400" />
 
         <label>Project Description</label>
         <div></div>
         <textarea
           value={project?.description}
+          readOnly={!isAdmin}
           onChange={(e) =>
             setProject(
               (prev) => ({ ...prev, description: e.target.value } as Project)
@@ -76,42 +79,24 @@ export default function EditProject() {
         />
       </div>
 
-      <div className="grid grid-cols-[auto_1fr]   gap-2 items-center">
-        <ShieldUser />
-
-        <label>Project Admin</label>
-        <div></div>
-        {(() => {
-          const admin = project?.member.find((mb) => mb._id === project.admin);
-          if (!admin) return null;
-          return (
-            <div className="flex flex-row gap-2 items-center  w-full panel-1 p-2">
-              <ProfileIcon src={admin.image || ""} size={32} />
-              <div className="flex flex-col  items-start justify-evenly text-sm grow">
-                <div>{admin.username}</div>
-                <div className="italic opacity-50 text-xs">{admin.email}</div>
-              </div>
-
-              <span className="text-sm px-2 p-1 bg-white text-gray-500 rounded">
-                Admin
-              </span>
-            </div>
-          );
-        })()}
-      </div>
-      <div className="grid grid-cols-[auto_1fr]   gap-2 items-center">
-        <Album />
+      <div className="grid grid-cols-[auto_1fr]   gap-2 items-center group">
+        <Album className="group-hover:text-blue-400" />
         <label>Project State</label>
         <div></div>
-        <ul className="flex flex-wrap gap-2 items-center">
+
+        <ul className="grid grid-cols-3 gap-1 items-center">
           {[0, 1, 2].map((s) => (
             <button
+              type="button"
+              disabled={!isAdmin}
               onClick={() =>
                 setProject((prev) => ({ ...prev, state: s } as Project))
               }
               key={s}
-              className={` text-sm p-1 rounded ${
-                project?.state === s ? "" : "opacity-30"
+              className={` text-sm p-1 rounded cursor-pointer ${
+                project?.state === s
+                  ? "outline-current outline-2"
+                  : "opacity-30"
               } ${
                 s === 0
                   ? " bg-yellow-800 text-yellow-300"
@@ -126,43 +111,52 @@ export default function EditProject() {
         </ul>
       </div>
 
-      <div className="grid grid-cols-[auto_1fr]   gap-2 items-center">
+      <div className="grid grid-cols-[auto_1fr]   gap-2 items-center group">
         <div
           className={`aspect-[2/1] w-6 rounded background-base background-${project?.theme}`}
         ></div>
         <label>Board Background</label>
         <div></div>
-        <ul className="flex flex-col gap-2 p-1 panel-1 ">
-          {theme.map((category) => (
-            <div key={category.name} className="pb-4">
-              <h2 className=" font-semibold mb-2">{category.name}</h2>
-              <div className="flex flex-wrap gap-3">
-                {category.background.map((bg) => (
-                  <button
-                    onClick={() =>
-                      setProject((prev) => ({ ...prev, theme: bg } as Project))
-                    }
-                    key={bg}
-                    className={`rounded-lg aspect-[2/1] max-w-[50px] grow min-w-[50px]  shadow-md background-base  background-${bg} cursor-pointer ${
-                      project?.theme === bg ? "outline-2 outline-gray-500" : ""
-                    }`}
-                  />
-                ))}
+        {isAdmin ? (
+          <ul className="flex flex-wrap gap-2 p-1 panel-1 ">
+            {theme.map((category) => (
+              <div key={category.name} className=" min-w-[200px] grow">
+                <h2 className=" font-semibold mb-2">{category.name}</h2>
+                <div className="grid grid-cols-3 gap-1">
+                  {category.background.map((bg) => (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setProject(
+                          (prev) => ({ ...prev, theme: bg } as Project)
+                        )
+                      }
+                      key={bg}
+                      className={`rounded aspect-[2/1] w-full  shadow-md background-base  background-${bg} cursor-pointer ${
+                        project?.theme === bg
+                          ? "outline-2 outline-gray-500"
+                          : ""
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </ul>
+            ))}
+          </ul>
+        ) : (
+          <div className={`background-base background-${project?.theme} aspect-[2/1] w-full rounded`}></div>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-2">
         <button
+          type="submit"
           disabled={isLoading}
           className="p-1 rounded text-green-400 bg-green-800 text-center cursor-pointer grow"
-          onClick={handleUpdateProject}
         >
           {isLoading ? <Loader /> : "Update Project"}
         </button>
       </div>
-    </div>
+    </form>
   );
 }

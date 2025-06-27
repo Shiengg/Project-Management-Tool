@@ -152,7 +152,7 @@
 }
 
 .task-card {
-  @apply rounded-md overflow-hidden  cursor-pointer  w-[250px] min-h-fit;
+  @apply rounded-md overflow-hidden   w-[250px] min-h-fit;
   background-color: #272727;
 }
 
@@ -161,12 +161,12 @@
 }
 
 .task-table-control {
-  @apply flex flex-row items-center p-1  w-screen;
+  @apply flex flex-row items-center p-1  w-screen text-white; 
   background-color: rgba(39, 39, 39, 0.3);
 }
 
 .task-table {
-  @apply flex flex-row overflow-auto items-start justify-start gap-2 p-2 snap-x;
+  @apply flex flex-row overflow-auto items-start justify-start gap-2 p-2 snap-x text-white;
 }
 
 .SideBar {

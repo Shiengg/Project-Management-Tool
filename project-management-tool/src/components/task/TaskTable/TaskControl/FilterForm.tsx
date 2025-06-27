@@ -366,7 +366,7 @@ export default function FilterForm() {
       </label>
       {project?.member?.map((m) => (
         <label htmlFor={m._id} key={m._id}>
-          <div className="flex items-center gap-2 cursor-pointer">
+          <div className="flex items-center gap-4 cursor-pointer">
             <input
               className="base-checkbox"
               type="checkbox"
@@ -381,8 +381,8 @@ export default function FilterForm() {
               }
               id={m._id}
             />
-            <div className="flex flex-row gap-2">
-              <ProfileIcon src={m.image || ""} size={32} />
+            <div className="flex flex-row gap-2 items-center">
+              <ProfileIcon src={m} size={24} />
               <div className="flex flex-col gap-1 items-start justify-evenly">
                 <div>{m.username}</div>
                 <div className="italic opacity-50">{m.email}</div>

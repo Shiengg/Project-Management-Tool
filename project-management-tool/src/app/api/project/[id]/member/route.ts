@@ -122,6 +122,12 @@ export const DELETE = async (
     project.member = project.member.filter(
       (id: any) => id.toString() !== userId
     );
+
+    project.list.forEach((tl: any) => {
+      tl.list.forEach((t: any) => {
+        t.member = t.member.filter((id: any) => id.toString() !== userId);
+      });
+    });
     project.log.unshift({
       email: user.email,
       action: "removed from the project",
@@ -136,6 +142,7 @@ export const DELETE = async (
       { status: 200 }
     );
   } catch (err: any) {
+    console.log(err)
     return NextResponse.json(
       { message: "Error removing user", error: err.message },
       { status: 500 }

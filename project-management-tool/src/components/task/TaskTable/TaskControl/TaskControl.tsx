@@ -20,18 +20,21 @@ export default function TaskControl() {
   return (
     <div className="task-table-control z-4">
       <span
-        className={`font-mono text-lg px-4  text-ellipsis overflow-auto whitespace-nowrap 
-      ${
-        project?.state === 0
-          ? " bg-yellow-800 text-yellow-300"
-          : project?.state === 1
-          ? "text-red-300 bg-red-800"
-          : "text-green-300 bg-green-800"
-      }
+        className={`min-w-3 aspect-square  rounded-full   ${
+          project?.state === 0
+            ? " bg-yellow-300/50 outline-2 outline-yellow-300 "
+            : project?.state === 1
+            ? " bg-red-500/50 outline-2 outline-red-500"
+            : " bg-green-500/50 outline-2 outline-green-500"
+        }`}
+      ></span>
+      <div
+        className={`font-mono  text-lg px-2  text-ellipsis overflow-hidden whitespace-nowrap 
         `}
       >
+        {" "}
         {project?.name}
-      </span>
+      </div>
 
       <div className="ml-auto flex flex-row gap-2 items-center justify-end">
         <button className="button-3" onClick={() => setView((prev) => !prev)}>
@@ -76,7 +79,7 @@ export default function TaskControl() {
           }
           menu={<FilterForm />}
         />
- 
+
         <Form
           name={"Member board"}
           icon={

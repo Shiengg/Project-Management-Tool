@@ -2,12 +2,13 @@ import { DefaultUser } from "next-auth";
 
 declare module "next-auth" {
   interface User extends DefaultUser {
-    _id?: string;
-    username?: string;
-    fullname?: string;
-    email?: string;
-    phoneNumber?: string;
-    image?: string;
+    _id: string;
+    username: string;
+    fullname: string;
+    email: string;
+    phoneNumber: string;
+    image: string;
+    createdAt: Date | string;
   }
 
   interface Session {
@@ -23,6 +24,7 @@ export type User = {
   phoneNumber?: string;
   image: string;
   notification?: Notification[];
+  createdAt: Date | string;
 };
 
 export type TaskList = {
@@ -42,15 +44,15 @@ export type Project = {
   state: 0 | 1 | 2;
   createdAt: Date | string;
   theme: string;
-  log: Log[]
+  log: Log[];
 };
 
 export type Log = {
-  _id:string;
+  _id: string;
   email: string;
   action: string;
-  createdAt: Date| string;
-}
+  createdAt: Date | string;
+};
 
 export type Task = {
   _id: string;
