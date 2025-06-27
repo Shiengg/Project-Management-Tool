@@ -7,11 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/UI/input"
 import { Label } from "@/components/UI/label"
 import { Button } from "@/components/UI/button"
-import { Mail, Lock, ArrowRight, CheckCircle2 } from "lucide-react"
+import { Mail, Lock, ArrowRight, CheckCircle2, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -75,13 +76,24 @@ export default function Login() {
                   <Lock className="absolute left-3 top-3 h-4 sm:h-5 w-4 sm:w-5 text-white/70 group-hover:text-blue-300 transition-colors duration-200" />
                   <Input
                     id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Enter your password"
-                    className="pl-10 h-10 sm:h-12 w-full text-sm sm:text-base rounded-lg border-2 border-white/20 bg-black/20 backdrop-blur-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 transition-all duration-200 text-white placeholder:text-gray-300"
+                    className="pl-10 pr-10 h-10 sm:h-12 w-full text-sm sm:text-base rounded-lg border-2 border-white/20 bg-black/20 backdrop-blur-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 transition-all duration-200 text-white placeholder:text-gray-300"
                     maxLength={30}
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3 h-4 sm:h-5 w-4 sm:w-5 text-white/70 hover:text-blue-300 transition-colors duration-200 focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-full w-full" />
+                    ) : (
+                      <Eye className="h-full w-full" />
+                    )}
+                  </button>
                 </div>
               </div>
 
