@@ -93,7 +93,7 @@ export default function Login() {
                 {isLoading ? (
                   <div className="flex items-center justify-center space-x-2">
                     <Loader />
-                    <span>Signing in...</span>
+                    {/* <span>Signing in...</span> */}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center space-x-2">

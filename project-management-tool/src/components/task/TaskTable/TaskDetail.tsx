@@ -47,8 +47,8 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
   const handleSave = async () => {
     setIsLoading(true);
     await handleUpdateTask({
-      _id:task._id,
-      name:task.name,
+      _id: task._id,
+      name: task.name,
       description: task.description,
       due: task.due,
       priority: task.priority,
@@ -139,8 +139,7 @@ export default function TaskDetail({ taskId }: { taskId: string }) {
               disabled={!isMyTask && !isAdmin}
               checked={task.status}
               onChange={(e) => {
-                setTask((prev) => ({ ...prev, status: !prev?.status } as Task));
-                handleUpdateTask({ ...task, status: e.target.checked });
+                handleUpdateTask({ _id: task._id, status: e.target.checked });
               }}
               title="mark complete"
               className={`appearance-none size-4 outline-2  outline-inherit rounded-full checked:outline-none checked:bg-green-600 cursor-pointer `}
