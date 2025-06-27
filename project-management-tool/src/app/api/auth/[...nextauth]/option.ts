@@ -23,11 +23,11 @@ export const options: NextAuthOptions = {
         await connectToDatabase();
         const user = await UserModel.findOne({ email });
         if (!user) {
-          throw new Error("Invalid email or password.");
+          throw new Error("account doesn't exist.");
         }
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-          throw new Error("Invalid email or password.");
+          throw new Error("Wrong password.");
         }
         // Trả về user, loại bỏ password và chuẩn hóa kiểu dữ liệu
         const userObj = user.toObject();

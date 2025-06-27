@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
         { email: { $regex: keyword, $options: "i" } },
       ],
     })
-      .select("_id fullname email image username") // Return only safe public fields
+      .select("_id fullname email image username createdAt") // Return only safe public fields
       .limit(30); // Optional: limit results
 
     return NextResponse.json(users, { status: 200 });

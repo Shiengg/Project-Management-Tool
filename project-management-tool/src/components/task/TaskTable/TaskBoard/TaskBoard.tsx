@@ -672,7 +672,6 @@ export default function TaskBoard() {
         >
           <TaskDetailContext.Provider value={{ openTaskId, setOpenTaskId }}>
             <div
-              draggable={isAdmin}
               onDrop={(e) => {
                 e.preventDefault(); // still needed if drop *does* happen
                 handleDrop();

@@ -28,7 +28,7 @@ export default function Invitation({ id }: { id: string }) {
     if (!session?.user) return;
     setInvitation((prev) => prev.filter((n) => n._id !== invitation._id));
     handleNotification(id, invitation._id, state).then((data) => {
-      toastSuccess(data.msg);
+      toastSuccess(data.message);
       if (state) {
         window.location.href = `/project/${invitation.projectId}`;
         if (socket) {

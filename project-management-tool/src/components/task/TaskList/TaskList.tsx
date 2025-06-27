@@ -17,6 +17,7 @@ import { filterTask } from "../TaskTable/TaskControl/FilterForm";
 import { DNDContext } from "../TaskTable/TaskBoard/TaskBoard";
 import Loader from "@/components/loader/Loader";
 import { useSession } from "next-auth/react";
+import { Input } from "@/components/UI/input";
 
 export default function TaskListComponent({ list }: { list: TaskList }) {
   const {
@@ -54,22 +55,13 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
       : 0;
 
   const handleDelete = async () => {
-    const result = await toastRequest("Do you want to remove this list?");
-    if (result) {
-      handleDeleteList(list._id);
-    }
+    handleDeleteList(list._id);
   };
 
   const handleMoveAllTaskTo = async (id: string) => {
-    const result = await toastRequest(
-      "Do you want to move all task from this list?"
-    );
-    if (result) {
-      [...tasks].forEach((t) => {
-        handleMoveTask(t._id, id, null);
-      });
-      toastSuccess("Tasks moved");
-    }
+    [...tasks].forEach((t) => {
+      handleMoveTask(t._id, id, null);
+    });
   };
 
   const handleAddNewTask = async () => {
@@ -99,6 +91,8 @@ export default function TaskListComponent({ list }: { list: TaskList }) {
       } `}
       style={{
         outline: hoverListId === list._id ? "2px solid  blue" : "none",
+
+        cursor: draggingId ? "grabbing" : isAdmin ? "grab" : "default",
       }}
     >
       <div

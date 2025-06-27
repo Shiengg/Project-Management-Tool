@@ -22,36 +22,47 @@ const invitationSchema = new Schema(
   }
 );
 
-const userSchema = new Schema({
-  username: {
-    type: String,
-    required: false,
+const userSchema = new Schema(
+  {
+    username: {
+      type: String,
+      required: false,
+    },
+    fullname: {
+      type: String,
+      required: false,
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+    },
+    phoneNumber: {
+      type: String,
+      required: false,
+    },
+    image: {
+      type: String,
+      required: false,
+    },
+    notification: [invitationSchema],
   },
-  fullname: {
-    type: String,
-    required: false,
-  },
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-  },
-  phoneNumber: {
-    type: String,
-    required: false,
-  },
-  image: {
-    type: String,
-    required: false,
-  },
-  notification: [invitationSchema],
-});
+  {
+    timestamps: true,
+  }
+);
+
+if (mongoose.models.User) {
+  delete mongoose.models.User;
+}
 
 userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();

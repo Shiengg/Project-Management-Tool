@@ -20,6 +20,7 @@ import Loader from "@/components/loader/Loader";
 import ProjectCard from "../ProjectCard/ProjectCard";
 import { createProject, getProjects } from "@/services/projectService";
 import { toastError, toastSuccess } from "@/components/toast/toaster";
+import { Input } from "@/components/UI/input";
 
 type FilterAndSortContextType = {
   filter: ProjectFilterType;
@@ -63,17 +64,23 @@ export default function ProjectTable({ id }: { id: string }) {
     <FilterAndSortContext.Provider value={{ filter, setFilter }}>
       <div className="flex flex-col gap-4 p-2 items-center size-full py-10 ">
         <div className="max-w-[800px] w-full items-center flex flex-wrap p-2 gap-2 panel-1 z-2">
-          <Search size={24} />
+          <div className="relative group grow">
+            <Input
+              id="search"
+              type="text"
+              name="search"
+              value={filter.keyword}
+              onChange={(e) =>
+                setFilter((prev) => ({ ...prev, keyword: e.target.value }))
+              }
+              placeholder="Search"
+              className="  pl-10 h-10 sm:h-12 w-full text-sm sm:text-base rounded-lg border-2 border-white/20 bg-black/20 backdrop-blur-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 transition-all duration-200 text-white placeholder:text-gray-300"
+              maxLength={30}
+              required
+            />
+            <Search className="absolute left-3 top-3 h-4 sm:h-5 w-4 sm:w-5 text-white/70 group-hover:text-blue-300 transition-colors duration-200" />
+          </div>
 
-          <input
-            type="text"
-            className="input-box grow"
-            placeholder="Search"
-            value={filter.keyword}
-            onChange={(e) =>
-              setFilter((prev) => ({ ...prev, keyword: e.target.value }))
-            }
-          />
           <div className="flex flex-row gap-2 items-center ml-auto">
             <Menu
               name="Filter"

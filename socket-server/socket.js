@@ -123,7 +123,7 @@ function initializeSocket(server) {
     });
 
     socket.on(PROJECT_CHANNEL.LOG, ({ projectId, log }) => {
-      socket.to(projectId).emit(PROJECT_CHANNEL.LOG, log);
+      io.to(projectId).emit(PROJECT_CHANNEL.LOG, log);
     });
   });
 }

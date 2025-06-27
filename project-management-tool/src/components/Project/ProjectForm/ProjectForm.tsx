@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { theme } from "@/components/theme/ThemeManager";
 import { createProject } from "@/services/projectService";
 import Loader from "@/components/loader/Loader";
+import { Input } from "@/components/UI/input";
 
 export default function ProjectForm({ onCreate }: { onCreate: any }) {
   const { data: session } = useSession();
@@ -28,7 +29,6 @@ export default function ProjectForm({ onCreate }: { onCreate: any }) {
       onSubmit={handleSubmit}
       className="w-full flex flex-col gap-4 bg-gray-900 p-2 rounded-lg"
     >
-
       <div className="flex flex-col gap-1">
         <label className="text-gray-300">Name</label>
         <input
@@ -60,17 +60,17 @@ export default function ProjectForm({ onCreate }: { onCreate: any }) {
           ></div>
         </label>
 
-        <ul className="flex flex-col gap-2 p-1 panel-1 ">
+        <ul className="flex flex-wrap gap-2 p-1 panel-1 ">
           {theme.map((category) => (
-            <div key={category.name} className="pb-4">
+            <div key={category.name} className=" min-w-[200px] grow">
               <h2 className=" font-semibold mb-2">{category.name}</h2>
-              <div className="flex flex-wrap gap-3">
+              <div className="grid grid-cols-3 gap-1">
                 {category.background.map((bg) => (
                   <button
                     type="button"
                     onClick={() => setProjectTheme(bg)}
                     key={bg}
-                    className={`rounded-lg aspect-[2/1] max-w-[50px] grow min-w-[50px]  shadow-md background-base  background-${bg} cursor-pointer ${
+                    className={`rounded aspect-[2/1] w-full  shadow-md background-base  background-${bg} cursor-pointer ${
                       projectTheme === bg ? "outline-2 outline-gray-500" : ""
                     }`}
                   />
