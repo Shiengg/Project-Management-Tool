@@ -47,16 +47,25 @@ export const options: NextAuthOptions = {
     error: "/",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.user = user;
       }
+
+      // Handle updates to the session
+      if (trigger === "update" && session) {
+        token.user = session.user;
+      }
+
       return token;
     },
     async session({ session, token }) {
       session.user = token.user as User;
-
       return session;
     },
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 };
