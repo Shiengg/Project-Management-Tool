@@ -3,7 +3,7 @@ import { ProjectContext } from '../../TaskTable';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { formatDate } from '@/lib/format';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/UI/button';
 import { Download } from 'lucide-react';
 
 export default function PrintReport() {

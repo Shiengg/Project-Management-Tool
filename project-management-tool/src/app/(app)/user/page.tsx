@@ -5,10 +5,11 @@ import { useSession } from "next-auth/react";
 import { Card } from "@/components/UI/card";
 import { Label } from "@/components/UI/label";
 import { Input } from "@/components/UI/input";
-import { Button } from "@/components/ui/button";
+
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Camera } from "lucide-react";
+import { Button } from '@/components/UI/button';
 
 export default function Account() {
   const { data: session, update: updateSession } = useSession();
