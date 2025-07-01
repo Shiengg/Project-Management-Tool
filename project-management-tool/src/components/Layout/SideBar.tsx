@@ -16,7 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/UI/sidebar"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/UI/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/UI/avatar"
 import { LogOut, Home, FolderKanban, Users, Settings, BarChart3, Calendar, FileText, Bell } from "lucide-react"
 import { Badge } from "@/components/UI/badge"
