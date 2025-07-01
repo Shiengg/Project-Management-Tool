@@ -17,6 +17,11 @@ app.use(cors({ origin: API_GATEWAY, optionSuccessStatus: 200 }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-server.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+// Health check endpoint for Railway
+app.get("/", (req, res) => {
+  res.send("Socket server is running");
+});
+
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on port ${PORT}`);
 });
