@@ -7,7 +7,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 
 export const PATCH = async (
   req: NextRequest,
-  { params }: { params: { id: string; inviteId: string } }
+  { params }: { params: Promise<{ id: string; inviteId: string }> }
 ) => {
   try {
     await connectToDatabase();

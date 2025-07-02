@@ -6,7 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (
   req: NextRequest,
-  { params }: { params: { id: string; listId: string } }
+
+  { params }: { params: Promise<{ id: string; listId: string }> }
 ) => {
   try {
     await connectToDatabase();
@@ -83,7 +84,8 @@ export const POST = async (
 
 export const PATCH = async (
   req: NextRequest,
-  { params }: { params: { id: string; listId: string } }
+
+  { params }: { params: Promise<{ id: string; listId: string }> }
 ) => {
   try {
     await connectToDatabase();
@@ -154,7 +156,8 @@ export const PATCH = async (
 
 export const DELETE = async (
   req: NextRequest,
-  { params }: { params: { id: string; listId: string } }
+
+  { params }: { params: Promise<{ id: string; listId: string }> }
 ) => {
   try {
     await connectToDatabase();

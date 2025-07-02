@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await connectToDatabase();
   const { id } = await params;

@@ -9,6 +9,7 @@ const mockUsers = [
     email: `user1@example.com`,
     phoneNumber: `+123456781`,
     image: `https://i.pravatar.cc/150?img=1`,
+    createdAt: new Date(),
   },
   {
     _id: `user_$2`,
@@ -17,6 +18,7 @@ const mockUsers = [
     email: `user$2@example.com`,
     phoneNumber: `+12345678$2`,
     image: `https://i.pravatar.cc/150?img=$2`,
+    createdAt: new Date(),
   },
 ];
 
@@ -34,6 +36,7 @@ function createMockUser(id: string): User {
     email: `user${id}@example.com`,
     phoneNumber: `+12345678${id}`,
     image: `https://i.pravatar.cc/150?img=${id}`,
+    createdAt: new Date(),
   };
 }
 

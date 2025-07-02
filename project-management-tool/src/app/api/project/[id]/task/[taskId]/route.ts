@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const PATCH = async (
   req: NextRequest,
-  { params }: { params: { id: string; taskId: string } }
+  { params }: { params: Promise<{ id: string; taskId: string }> }
 ) => {
   try {
     await connectToDatabase();
@@ -78,7 +78,7 @@ export const PATCH = async (
 
 export const DELETE = async (
   req: NextRequest,
-  { params }: { params: { id: string; taskId: string } }
+  { params }: { params: Promise<{ id: string; taskId: string }> }
 ) => {
   try {
     await connectToDatabase();

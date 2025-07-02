@@ -7,7 +7,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 
 export const POST = async (
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }>  }
 ) => {
   try {
     await connectToDatabase();
@@ -82,7 +82,7 @@ export const POST = async (
 
 export const DELETE = async (
   req: NextRequest,
-  { params }: { params: { id: string } } // project ID
+  { params }: { params:  Promise<{ id: string }>  } // project ID
 ) => {
   try {
     await connectToDatabase();

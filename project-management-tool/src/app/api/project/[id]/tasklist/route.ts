@@ -6,7 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (
   req: NextRequest,
-  { params }: { params: { id: string } }
+
+  { params }: { params: Promise<{ id: string }> }
 ) => {
   try {
     await connectToDatabase();
@@ -73,7 +74,7 @@ export const POST = async (
 
 export const PATCH = async (
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
   try {
     await connectToDatabase();
