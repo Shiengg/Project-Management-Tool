@@ -96,7 +96,7 @@ export const filterTask = (filter: SystemFilterType, list: Task[]) => {
     }
 
     // 5. Overdue
-    if (filter.overdue && taskDue >= now) {
+    if (filter.overdue && (taskDue >= now || !task.due) ) {
       return false;
     }
 
